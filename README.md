@@ -98,9 +98,9 @@ normal and every app goes through it.
 
 ## Suggested pricing (already in the paywall UI)
 
-- Monthly: $2.99
-- Yearly: $19.99 (framed as the best value)
-- Lifetime: $34.99
+- Monthly: $1.00
+- Yearly: $9.99 (framed as the best value)
+- Lifetime: $30.00
 
 These numbers follow the pattern of profitable low-overhead habit apps:
 cheap enough that people don't think twice, with a lifetime option for

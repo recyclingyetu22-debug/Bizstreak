@@ -12,9 +12,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 type PlanId = 'monthly' | 'yearly' | 'lifetime';
 
 const PLANS: { id: PlanId; label: string; price: string; sub?: string; badge?: string }[] = [
-  { id: 'yearly', label: 'Yearly', price: '$19.99/yr', sub: 'Just $1.67/month', badge: 'BEST VALUE' },
-  { id: 'monthly', label: 'Monthly', price: '$2.99/mo' },
-  { id: 'lifetime', label: 'Lifetime', price: '$34.99', sub: 'Pay once, own it forever' },
+  { id: 'yearly', label: 'Yearly', price: '$9.99/yr', sub: 'Just $0.83/month', badge: 'BEST VALUE' },
+  { id: 'monthly', label: 'Monthly', price: '$1.00/mo' },
+  { id: 'lifetime', label: 'Lifetime', price: '$30.00', sub: 'Pay once, own it forever' },
 ];
 
 const FEATURES = [
