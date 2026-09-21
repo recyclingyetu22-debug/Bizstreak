@@ -9,10 +9,11 @@ import type { PurchasesOffering, PurchasesPackage, CustomerInfo } from 'react-na
 const API_KEY_IOS = (Constants.expoConfig?.extra?.revenueCatApiKeyIos as string | undefined) ?? '';
 const API_KEY_ANDROID = (Constants.expoConfig?.extra?.revenueCatApiKeyAndroid as string | undefined) ?? '';
 
-// The Entitlement identifier you create in the RevenueCat dashboard
-// (Entitlements tab) — attach the monthly, yearly, AND lifetime products to
+// The Entitlement identifier from the RevenueCat dashboard (Entitlements
+// tab) — "bizstreak_pro" is what RevenueCat auto-created for this project;
+// the monthly, yearly, and lifetime products all need to be attached to
 // this same entitlement so any one of them unlocks Pro.
-export const PRO_ENTITLEMENT_ID = 'pro';
+export const PRO_ENTITLEMENT_ID = 'bizstreak_pro';
 
 // react-native-purchases has native code that plain Expo Go does not
 // include at all (unlike expo-notifications, which Expo Go does include,
