@@ -8,6 +8,7 @@ import { useTheme } from '../ThemeContext';
 import HabitCard from '../components/HabitCard';
 import { FREE_HABIT_LIMIT } from '../types';
 import { todayISO } from '../streaks';
+import { getSmartTip } from '../insights';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -19,6 +20,11 @@ export default function HomeScreen({ navigation }: Props) {
   const today = todayISO();
   const doneTodayCount = habits.filter((h) => h.completions.includes(today)).length;
   const progress = habits.length === 0 ? 0 : doneTodayCount / habits.length;
+  // Recomputed only when the habit list identity changes (a completion
+  // toggle replaces the array), not on every render — cheap either way at
+  // realistic habit counts, but no reason to redo the weekday scan for
+  // unrelated re-renders like the edit-mode toggle.
+  const smartTip = useMemo(() => getSmartTip(habits), [habits]);
 
   const handleAddPress = () => {
     if (!isPro && habits.length >= FREE_HABIT_LIMIT) {
@@ -58,6 +64,13 @@ export default function HomeScreen({ navigation }: Props) {
           </Pressable>
         </View>
       </View>
+
+      {smartTip && (
+        <View style={styles.tipCard}>
+          <Text style={styles.tipEmoji}>{smartTip.emoji}</Text>
+          <Text style={styles.tipText}>{smartTip.text}</Text>
+        </View>
+      )}
 
       {habits.length === 0 ? (
         <View style={styles.empty}>
@@ -128,6 +141,20 @@ function makeStyles(theme: Theme) {
     editToggleText: { color: theme.accent, fontSize: 14, fontWeight: '700' },
     settingsBtn: { padding: 6 },
     settingsIcon: { fontSize: 20 },
+    tipCard: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 10,
+      backgroundColor: theme.card,
+      borderWidth: 1,
+      borderColor: theme.border,
+      borderRadius: 14,
+      padding: 14,
+      marginHorizontal: 16,
+      marginTop: 14,
+    },
+    tipEmoji: { fontSize: 18 },
+    tipText: { flex: 1, color: theme.text, fontSize: 13, lineHeight: 19 },
     empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40 },
     emptyEmoji: { fontSize: 48, marginBottom: 12 },
     emptyTitle: { color: theme.text, fontSize: 18, fontWeight: '700', marginBottom: 8 },
