@@ -6,6 +6,7 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import BackButton from '../components/BackButton';
 import EmojiPicker from '../components/EmojiPicker';
 import { HABIT_COLORS } from '../types';
 
@@ -55,9 +56,7 @@ export default function EditHabitScreen({ route, navigation }: Props) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10}>
-          <Text style={styles.cancel}>Cancel</Text>
-        </Pressable>
+        <BackButton onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>Edit Habit</Text>
         <Pressable onPress={handleSave} disabled={!canSave} hitSlop={10}>
           <Text style={[styles.save, !canSave && styles.saveDisabled]}>Save</Text>

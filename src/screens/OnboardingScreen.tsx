@@ -6,6 +6,7 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import BackButton from '../components/BackButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
@@ -43,7 +44,11 @@ export default function OnboardingScreen({ navigation }: Props) {
 
   const finish = () => {
     setOnboarded(true);
-    navigation.replace('Home');
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.replace('Home');
+    }
   };
 
   const next = () => {
@@ -56,6 +61,9 @@ export default function OnboardingScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.safe}>
+      {navigation.canGoBack() && (
+        <BackButton onPress={() => navigation.goBack()} style={styles.back} />
+      )}
       <Pressable onPress={finish} style={styles.skip} hitSlop={10}>
         <Text style={styles.skipText}>Skip</Text>
       </Pressable>
@@ -94,6 +102,7 @@ export default function OnboardingScreen({ navigation }: Props) {
 function makeStyles(theme: Theme) {
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: theme.bg },
+    back: { position: 'absolute', top: 20, left: 20, zIndex: 1 },
     skip: { position: 'absolute', top: 16, right: 20, zIndex: 1, padding: 8 },
     skipText: { color: theme.textMuted, fontSize: 14 },
     slide: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 36 },

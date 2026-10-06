@@ -6,6 +6,7 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import BackButton from '../components/BackButton';
 import { isPurchasesUsable, purchasePlan, PRO_ENTITLEMENT_ID } from '../purchases';
 import { PRIVACY_URL, TERMS_URL } from '../links';
 
@@ -54,9 +55,12 @@ export default function PaywallScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 40 }}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} style={styles.closeBtn}>
-          <Text style={styles.closeText}>✕</Text>
-        </Pressable>
+        <View style={styles.topRow}>
+          <BackButton onPress={() => navigation.goBack()} />
+          <Pressable onPress={() => navigation.goBack()} hitSlop={10} style={styles.closeBtn}>
+            <Text style={styles.closeText}>✕</Text>
+          </Pressable>
+        </View>
 
         <Text style={styles.crown}>🔥</Text>
         <Text style={styles.title}>Go Pro</Text>
@@ -116,7 +120,8 @@ export default function PaywallScreen({ navigation }: Props) {
 function makeStyles(theme: Theme) {
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: theme.bg },
-    closeBtn: { alignSelf: 'flex-end', padding: 6 },
+    topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    closeBtn: { padding: 6 },
     closeText: { color: theme.textMuted, fontSize: 18 },
     crown: { fontSize: 40, textAlign: 'center', marginTop: 4 },
     title: { color: theme.text, fontSize: 26, fontWeight: '800', textAlign: 'center', marginTop: 8 },

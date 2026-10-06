@@ -6,6 +6,7 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import BackButton from '../components/BackButton';
 import HabitCard from '../components/HabitCard';
 import { FREE_HABIT_LIMIT } from '../types';
 import { todayISO } from '../streaks';
@@ -48,6 +49,7 @@ export default function HomeScreen({ navigation }: Props) {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <View style={{ flex: 1 }}>
+          <BackButton onPress={() => navigation.navigate('Onboarding')} />
           <Text style={styles.title}>BizStreak</Text>
           <Text style={styles.subtitle}>{progressMessage()}</Text>
           {habits.length > 0 && (
