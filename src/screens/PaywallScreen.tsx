@@ -1,11 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, ActivityIndicator, Linking } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
 import { isPurchasesUsable, purchasePlan, PRO_ENTITLEMENT_ID } from '../purchases';
+import { PRIVACY_URL, TERMS_URL } from '../links';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 
@@ -19,9 +21,7 @@ const PLANS: { id: PlanId; label: string; price: string; sub?: string; badge?: s
 
 const FEATURES = [
   'Unlimited habits (free plan is capped at 3)',
-  'Full yearly history & streak stats',
-  'Custom colors & icons',
-  'Daily reminder notifications',
+  'Everything in the free plan, with no limits',
   'Support future updates',
 ];
 
@@ -96,6 +96,15 @@ export default function PaywallScreen({ navigation }: Props) {
         <Text style={styles.fineprint}>
           Cancel anytime. Subscriptions renew automatically until canceled.
         </Text>
+        <View style={styles.legalRow}>
+          <Pressable onPress={() => Linking.openURL(TERMS_URL)} hitSlop={8}>
+            <Text style={styles.legalLink}>Terms of Use</Text>
+          </Pressable>
+          <Text style={styles.fineprint}>  •  </Text>
+          <Pressable onPress={() => Linking.openURL(PRIVACY_URL)} hitSlop={8}>
+            <Text style={styles.legalLink}>Privacy Policy</Text>
+          </Pressable>
+        </View>
         {!isPurchasesUsable() && (
           <Text style={styles.fineprint}>Preview build — purchases aren't testable in Expo Go.</Text>
         )}
@@ -140,6 +149,8 @@ function makeStyles(theme: Theme) {
     planSub: { color: theme.textMuted, fontSize: 12, marginTop: 2 },
     cta: { backgroundColor: theme.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
     ctaText: { color: theme.accentOn, fontSize: 16, fontWeight: '800' },
+    legalRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10 },
+    legalLink: { color: theme.accent, fontSize: 12, textDecorationLine: 'underline' },
     fineprint: { color: theme.textFaint, fontSize: 11, textAlign: 'center', marginTop: 14 },
   });
 }

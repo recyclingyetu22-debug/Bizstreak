@@ -5,14 +5,14 @@ import {
   TextInput,
   Pressable,
   StyleSheet,
-  ScrollView,
-  SafeAreaView,
-} from 'react-native';
+  ScrollView} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import EmojiPicker from '../components/EmojiPicker';
 import { HABIT_COLORS, HABIT_TEMPLATES } from '../types';
 import { todayISO } from '../streaks';
 
@@ -89,6 +89,9 @@ export default function AddHabitScreen({ navigation }: Props) {
             style={styles.nameInput}
           />
         </View>
+
+        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>Pick an emoji</Text>
+        <EmojiPicker value={emoji} onChange={setEmoji} />
 
         <Text style={[styles.sectionLabel, { marginTop: 24 }]}>Color</Text>
         <View style={styles.colorRow}>

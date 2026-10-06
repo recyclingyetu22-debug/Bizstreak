@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer, DefaultTheme, DarkTheme as NavDarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './src/navigation';
@@ -47,10 +48,12 @@ function RootNavigator() {
 
 export default function App() {
   return (
-    <StoreProvider>
-      <ThemeProvider>
-        <RootNavigator />
-      </ThemeProvider>
-    </StoreProvider>
+    <SafeAreaProvider>
+      <StoreProvider>
+        <ThemeProvider>
+          <RootNavigator />
+        </ThemeProvider>
+      </StoreProvider>
+    </SafeAreaProvider>
   );
 }

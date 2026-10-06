@@ -67,7 +67,7 @@ async function getPlanPackage(planId: PlanId): Promise<PurchasesPackage> {
     throw new Error("Purchases need the full app build to test — they're not available in this Expo Go preview.");
   }
   if (!configured) {
-    throw new Error('Payments are not configured yet — see the README section "Turning the mock paywall into real payments".');
+    throw new Error('Purchases are not available in this version yet. Please check back soon.');
   }
   const Purchases = await loadPurchasesModule();
   const offerings = await Purchases.getOfferings();
@@ -94,7 +94,7 @@ export async function restorePurchases(): Promise<CustomerInfo> {
     throw new Error("Purchases need the full app build to test — they're not available in this Expo Go preview.");
   }
   if (!configured) {
-    throw new Error('Payments are not configured yet — nothing to restore.');
+    throw new Error('Purchases are not available in this version yet, so there is nothing to restore.');
   }
   const Purchases = await loadPurchasesModule();
   return Purchases.restorePurchases();

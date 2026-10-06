@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, SafeAreaView, ScrollView, Alert, Switch } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Switch, Linking } from 'react-native';
+import Constants from 'expo-constants';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
@@ -8,6 +10,7 @@ import { useTheme } from '../ThemeContext';
 import { ThemeMode } from '../types';
 import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder, notificationsAvailable } from '../notifications';
 import { restorePurchases, isPurchasesUsable, PRO_ENTITLEMENT_ID } from '../purchases';
+import { PRIVACY_URL, TERMS_URL, DELETE_DATA_URL, SUPPORT_EMAIL } from '../links';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
@@ -143,6 +146,26 @@ export default function SettingsScreen({ navigation }: Props) {
           <Text style={styles.rowChevron}>›</Text>
         </Pressable>
 
+        <Pressable onPress={() => Linking.openURL(PRIVACY_URL)} style={styles.linkRow}>
+          <Text style={styles.rowText}>Privacy Policy</Text>
+          <Text style={styles.rowChevron}>›</Text>
+        </Pressable>
+        <Pressable onPress={() => Linking.openURL(TERMS_URL)} style={styles.linkRow}>
+          <Text style={styles.rowText}>Terms of Use</Text>
+          <Text style={styles.rowChevron}>›</Text>
+        </Pressable>
+        <Pressable onPress={() => Linking.openURL(DELETE_DATA_URL)} style={styles.linkRow}>
+          <Text style={styles.rowText}>Delete my data</Text>
+          <Text style={styles.rowChevron}>›</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => Linking.openURL('mailto:' + SUPPORT_EMAIL + '?subject=BizStreak%20support')}
+          style={styles.linkRow}
+        >
+          <Text style={styles.rowText}>Contact support</Text>
+          <Text style={styles.rowChevron}>›</Text>
+        </Pressable>
+
         <View style={styles.aboutBox}>
           <Text style={styles.aboutTitle}>About BizStreak</Text>
           <Text style={styles.aboutBody}>
@@ -150,6 +173,7 @@ export default function SettingsScreen({ navigation }: Props) {
             checking stock, following up on unpaid invoices, recording sales, and staying on top of
             leads. All data stays on this device.
           </Text>
+          <Text style={[styles.aboutBody, { marginTop: 12 }]}>Version {Constants.expoConfig?.version ?? '1.0.0'}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import EmojiPicker from '../components/EmojiPicker';
 import { HABIT_COLORS } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EditHabit'>;
@@ -68,6 +70,9 @@ export default function EditHabitScreen({ route, navigation }: Props) {
           <TextInput value={emoji} onChangeText={setEmoji} maxLength={2} style={styles.emojiInput} />
           <TextInput value={name} onChangeText={setName} placeholderTextColor={theme.textFaint} style={styles.nameInput} />
         </View>
+
+        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>Pick an emoji</Text>
+        <EmojiPicker value={emoji} onChange={setEmoji} />
 
         <Text style={[styles.sectionLabel, { marginTop: 24 }]}>Color</Text>
         <View style={styles.colorRow}>
