@@ -107,6 +107,14 @@ export default function AddHabitScreen({ navigation }: Props) {
             />
           ))}
         </View>
+
+        <Pressable
+          onPress={handleSave}
+          disabled={!canSave}
+          style={[styles.saveBtn, !canSave && styles.saveBtnDisabled]}
+        >
+          <Text style={styles.saveBtnText}>Save habit</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -115,6 +123,9 @@ export default function AddHabitScreen({ navigation }: Props) {
 function makeStyles(theme: Theme) {
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: theme.bg },
+    saveBtn: { marginTop: 32, backgroundColor: theme.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
+    saveBtnDisabled: { opacity: 0.4 },
+    saveBtnText: { color: theme.accentOn, fontSize: 16, fontWeight: '800' },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
