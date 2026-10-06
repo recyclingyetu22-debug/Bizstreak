@@ -5,6 +5,10 @@ export interface Habit {
   color: string; // hex accent color
   createdAt: string; // ISO date (YYYY-MM-DD)
   completions: string[]; // ISO dates (YYYY-MM-DD) this habit was marked done
+  // Days of the week this habit counts on (0 = Sunday .. 6 = Saturday).
+  // Missing or empty means every day, so habits saved before schedules
+  // existed keep working unchanged.
+  days?: number[];
 }
 
 export type ThemeMode = 'dark' | 'light';
@@ -47,4 +51,15 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
   { emoji: '🧾', name: 'Update the books' },
   { emoji: '🤝', name: 'Check in with a supplier' },
   { emoji: '📈', name: "Review yesterday's numbers" },
+];
+
+// Monday-first order for the day picker; values are JS getDay() numbers.
+export const WEEKDAY_OPTIONS: { dow: number; label: string }[] = [
+  { dow: 1, label: 'Mon' },
+  { dow: 2, label: 'Tue' },
+  { dow: 3, label: 'Wed' },
+  { dow: 4, label: 'Thu' },
+  { dow: 5, label: 'Fri' },
+  { dow: 6, label: 'Sat' },
+  { dow: 0, label: 'Sun' },
 ];

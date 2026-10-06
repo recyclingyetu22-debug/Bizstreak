@@ -18,6 +18,27 @@ export function addDays(dateISO: string, delta: number): string {
   return toISODate(dt);
 }
 
+function dowOfISO(dateISO: string): number {
+  const [y, m, d] = dateISO.split('-').map(Number);
+  return new Date(y, m - 1, d).getDay();
+}
+
+/** Whether this habit counts on the given date. A habit with no schedule
+ * (every habit created before schedules existed) counts every day. */
+export function isScheduled(habit: Habit, dateISO: string): boolean {
+  if (!habit.days || habit.days.length === 0) return true;
+  return habit.days.includes(dowOfISO(dateISO));
+}
+
+const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/** e.g. 'Every day', 'Mon - Sat', or 'Mon, Wed, Fri'. */
+export function scheduleLabel(habit: Habit): string {
+  if (!habit.days || habit.days.length === 0 || habit.days.length === 7) return 'Every day';
+  const order = [1, 2, 3, 4, 5, 6, 0].filter((d) => habit.days!.includes(d));
+  return order.map((d) => SHORT_DAYS[d]).join(', ');
+}
+
 export function toggleCompletion(habit: Habit, dateISO: string): Habit {
   const has = habit.completions.includes(dateISO);
   const completions = has
@@ -26,17 +47,25 @@ export function toggleCompletion(habit: Habit, dateISO: string): Habit {
   return { ...habit, completions };
 }
 
-/** Current streak, counting back from today. Today not yet done doesn't break
- * a streak that's still "alive" (habit can still be done later today). */
+/** Current streak, counting back from today. Days the habit isn't scheduled
+ * on are skipped (they neither extend nor break the streak). Today not yet
+ * done doesn't break a streak that's still "alive" (it can still be done
+ * later today). */
 export function getCurrentStreak(habit: Habit): number {
   const completed = new Set(habit.completions);
   let cursor = todayISO();
-  if (!completed.has(cursor)) {
+  if (isScheduled(habit, cursor) && !completed.has(cursor)) {
     cursor = addDays(cursor, -1);
   }
   let streak = 0;
-  while (completed.has(cursor)) {
-    streak++;
+  // Bounded: a habit can't have more than a few years of history here, and
+  // the bound guarantees termination whatever the schedule looks like.
+  for (let i = 0; i < 4000; i++) {
+    if (completed.has(cursor)) {
+      streak++;
+    } else if (isScheduled(habit, cursor)) {
+      break;
+    }
     cursor = addDays(cursor, -1);
   }
   return streak;
@@ -44,15 +73,26 @@ export function getCurrentStreak(habit: Habit): number {
 
 export function getBestStreak(habit: Habit): number {
   if (habit.completions.length === 0) return 0;
-  const sorted = [...habit.completions].sort();
+  const sorted = Array.from(new Set(habit.completions)).sort();
   let best = 1;
   let current = 1;
   for (let i = 1; i < sorted.length; i++) {
-    if (sorted[i] === addDays(sorted[i - 1], 1)) {
+    // The streak continues when every day between the two completions is a
+    // day the habit isn't scheduled on.
+    let gapHasScheduledDay = false;
+    let cursor = addDays(sorted[i - 1], 1);
+    while (cursor < sorted[i]) {
+      if (isScheduled(habit, cursor)) {
+        gapHasScheduledDay = true;
+        break;
+      }
+      cursor = addDays(cursor, 1);
+    }
+    if (gapHasScheduledDay) {
+      current = 1;
+    } else {
       current++;
       best = Math.max(best, current);
-    } else if (sorted[i] !== sorted[i - 1]) {
-      current = 1;
     }
   }
   return best;
@@ -62,17 +102,21 @@ export function getCompletionRate(habit: Habit, days: number = 30): number {
   const completed = new Set(habit.completions);
   let cursor = todayISO();
   let hits = 0;
+  let due = 0;
   for (let i = 0; i < days; i++) {
+    if (isScheduled(habit, cursor)) due++;
     if (completed.has(cursor)) hits++;
     cursor = addDays(cursor, -1);
   }
-  return Math.round((hits / days) * 100);
+  if (due === 0) return 0;
+  return Math.min(100, Math.round((hits / due) * 100));
 }
 
 export interface GridCell {
   date: string;
   completed: boolean;
   future: boolean;
+  scheduled: boolean;
 }
 
 /** Builds a GitHub-style grid: an array of week-columns, each with 7 day-cells
@@ -93,7 +137,7 @@ export function generateGridWeeks(habit: Habit, weeks: number): GridCell[][] {
     const d = new Date(gridStart);
     d.setDate(gridStart.getDate() + i);
     const iso = toISODate(d);
-    cells.push({ date: iso, completed: completed.has(iso), future: iso > todayIso });
+    cells.push({ date: iso, completed: completed.has(iso), future: iso > todayIso, scheduled: isScheduled(habit, iso) });
   }
 
   const columns: GridCell[][] = [];
