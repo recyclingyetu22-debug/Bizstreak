@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { AppState, Habit, ThemeMode } from './types';
+import { Language, detectLanguage } from './i18n';
 import { loadState, saveState } from './storage';
 import { toggleCompletion } from './streaks';
 import { initPurchases, hasProEntitlement } from './purchases';
@@ -12,6 +13,7 @@ interface StoreValue {
   themeMode: ThemeMode;
   reminderEnabled: boolean;
   reminderTime: string;
+  language: Language;
   addHabit: (habit: Habit) => void;
   updateHabit: (id: string, patch: Partial<Pick<Habit, 'name' | 'emoji' | 'color'>>) => void;
   deleteHabit: (id: string) => void;
@@ -21,6 +23,7 @@ interface StoreValue {
   setOnboarded: (value: boolean) => void;
   setThemeMode: (mode: ThemeMode) => void;
   setReminder: (enabled: boolean, time: string) => void;
+  setLanguage: (language: Language) => void;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -32,6 +35,7 @@ const defaultState: AppState = {
   themeMode: 'dark',
   reminderEnabled: false,
   reminderTime: '09:00',
+  language: detectLanguage(),
 };
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
@@ -89,6 +93,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const setPro = (value: boolean) => setState((s) => ({ ...s, isPro: value }));
   const setOnboarded = (value: boolean) => setState((s) => ({ ...s, onboarded: value }));
   const setThemeMode = (mode: ThemeMode) => setState((s) => ({ ...s, themeMode: mode }));
+  const setLanguage = (language: Language) => setState((s) => ({ ...s, language }));
   const setReminder = (enabled: boolean, time: string) =>
     setState((s) => ({ ...s, reminderEnabled: enabled, reminderTime: time }));
 
@@ -102,6 +107,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         themeMode: state.themeMode,
         reminderEnabled: state.reminderEnabled,
         reminderTime: state.reminderTime,
+        language: state.language,
         addHabit,
         updateHabit,
         deleteHabit,
@@ -111,6 +117,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         setOnboarded,
         setThemeMode,
         setReminder,
+        setLanguage,
       }}
     >
       {children}

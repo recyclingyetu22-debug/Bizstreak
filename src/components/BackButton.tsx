@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Pressable, Text, StyleSheet, ViewStyle } from 'react-native';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import { useT } from '../useT';
 
 interface Props {
   onPress: () => void;
@@ -12,10 +13,11 @@ interface Props {
 // phone's own back arrow.
 export default function BackButton({ onPress, style }: Props) {
   const theme = useTheme();
+  const t = useT();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
     <Pressable onPress={onPress} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back" style={[styles.btn, style]}>
-      <Text style={styles.text}>‹ Back</Text>
+      <Text style={styles.text}>{t('back')}</Text>
     </Pressable>
   );
 }

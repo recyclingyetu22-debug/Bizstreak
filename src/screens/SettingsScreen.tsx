@@ -7,6 +7,8 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import { useT } from '../useT';
+import { Language, purchaseErrorKey } from '../i18n';
 import { ThemeMode } from '../types';
 import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder, notificationsAvailable } from '../notifications';
 import { restorePurchases, isPurchasesUsable, PRO_ENTITLEMENT_ID } from '../purchases';
@@ -17,7 +19,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 const REMINDER_TIMES = ['07:00', '09:00', '12:00', '18:00', '20:00'];
 
 export default function SettingsScreen({ navigation }: Props) {
-  const { isPro, habits, themeMode, setThemeMode, reminderEnabled, reminderTime, setReminder, setPro } = useStore();
+  const { isPro, habits, themeMode, setThemeMode, reminderEnabled, reminderTime, setReminder, setPro, language, setLanguage } = useStore();
+  const t = useT();
   const theme = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [busy, setBusy] = useState(false);
@@ -28,12 +31,13 @@ export default function SettingsScreen({ navigation }: Props) {
       const info = await restorePurchases();
       if (info.entitlements.active[PRO_ENTITLEMENT_ID]) {
         setPro(true);
-        Alert.alert('Restored', 'Your Pro purchase has been restored.');
+        Alert.alert(t('set.restoredTitle'), t('set.restoredBody'));
       } else {
-        Alert.alert('Nothing to restore', 'No active purchase was found for this account.');
+        Alert.alert(t('set.nothingTitle'), t('set.nothingBody'));
       }
     } catch (err: any) {
-      Alert.alert(isPurchasesUsable() ? 'Restore failed' : 'Preview build', err?.message ?? 'Something went wrong.');
+      const known = purchaseErrorKey(err?.code);
+      Alert.alert(isPurchasesUsable() ? t('set.restoreFailed') : t('set.previewBuild'), known ? t(known) : t('set.genericError'));
     } finally {
       setBusy(false);
     }
@@ -46,27 +50,32 @@ export default function SettingsScreen({ navigation }: Props) {
       return;
     }
     if (!notificationsAvailable) {
-      Alert.alert(
-        'Not available in this test build',
-        'Reminders need a real build to work — they\'re disabled while testing in Expo Go. This will work once BizStreak is built properly.',
-      );
+      Alert.alert(t('set.notifUnavailableTitle'), t('set.notifUnavailableBody'));
       return;
     }
     setBusy(true);
     const granted = await requestNotificationPermission();
     setBusy(false);
     if (!granted) {
-      Alert.alert('Notifications disabled', 'Enable notifications for BizStreak in your phone settings to get daily reminders.');
+      Alert.alert(t('set.notifDisabledTitle'), t('set.notifDisabledBody'));
       return;
     }
-    await scheduleDailyReminder(reminderTime);
+    await scheduleDailyReminder(reminderTime, language);
     setReminder(true, reminderTime);
   };
 
   const handleTimePick = async (time: string) => {
     setReminder(reminderEnabled, time);
     if (reminderEnabled) {
-      await scheduleDailyReminder(time);
+      await scheduleDailyReminder(time, language);
+    }
+  };
+
+  const handleLanguage = async (next: Language) => {
+    setLanguage(next);
+    // The reminder text is baked in when it's scheduled, so re-schedule it.
+    if (reminderEnabled) {
+      await scheduleDailyReminder(reminderTime, next);
     }
   };
 
@@ -74,9 +83,9 @@ export default function SettingsScreen({ navigation }: Props) {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={10}>
-          <Text style={styles.back}>‹ Back</Text>
+          <Text style={styles.back}>{t('back')}</Text>
         </Pressable>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={styles.headerTitle}>{t('set.title')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -84,22 +93,22 @@ export default function SettingsScreen({ navigation }: Props) {
         <View style={styles.statusCard}>
           <Text style={styles.statusEmoji}>{isPro ? '👑' : '🔓'}</Text>
           <View style={{ flex: 1 }}>
-            <Text style={styles.statusTitle}>{isPro ? 'BizStreak Pro' : 'Free plan'}</Text>
+            <Text style={styles.statusTitle}>{isPro ? t('set.proTitle') : t('set.freePlan')}</Text>
             <Text style={styles.statusBody}>
-              {isPro ? 'Unlimited habits unlocked.' : `${habits.length}/3 habits used`}
+              {isPro ? t('set.unlimited') : t('set.used', { n: habits.length })}
             </Text>
           </View>
           {!isPro && (
             <Pressable onPress={() => navigation.navigate('Paywall')} style={styles.upgradeBtn}>
-              <Text style={styles.upgradeBtnText}>Upgrade</Text>
+              <Text style={styles.upgradeBtnText}>{t('set.upgrade')}</Text>
             </Pressable>
           )}
         </View>
 
-        <Text style={styles.sectionTitle}>Daily reminder</Text>
+        <Text style={styles.sectionTitle}>{t('set.reminder')}</Text>
         <View style={styles.card}>
           <View style={styles.row}>
-            <Text style={styles.rowText}>Remind me every day</Text>
+            <Text style={styles.rowText}>{t('set.remindMe')}</Text>
             <Switch
               value={reminderEnabled}
               onValueChange={handleReminderToggle}
@@ -123,7 +132,7 @@ export default function SettingsScreen({ navigation }: Props) {
           )}
         </View>
 
-        <Text style={styles.sectionTitle}>Appearance</Text>
+        <Text style={styles.sectionTitle}>{t('set.appearance')}</Text>
         <View style={styles.card}>
           <View style={styles.themeRow}>
             {(['dark', 'light'] as ThemeMode[]).map((m) => (
@@ -134,7 +143,24 @@ export default function SettingsScreen({ navigation }: Props) {
               >
                 <Text style={styles.themeEmoji}>{m === 'dark' ? '🌙' : '☀️'}</Text>
                 <Text style={[styles.themeLabel, themeMode === m && styles.themeLabelActive]}>
-                  {m === 'dark' ? 'Dark' : 'Light'}
+                  {m === 'dark' ? t('set.dark') : t('set.light')}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        <Text style={styles.sectionTitle}>{t('set.language')}</Text>
+        <View style={styles.card}>
+          <View style={styles.themeRow}>
+            {(['en', 'fr'] as Language[]).map((l) => (
+              <Pressable
+                key={l}
+                onPress={() => handleLanguage(l)}
+                style={[styles.themeOption, language === l && styles.themeOptionActive]}
+              >
+                <Text style={[styles.themeLabel, language === l && styles.themeLabelActive]}>
+                  {l === 'en' ? 'English' : 'Français'}
                 </Text>
               </Pressable>
             ))}
@@ -142,38 +168,36 @@ export default function SettingsScreen({ navigation }: Props) {
         </View>
 
         <Pressable onPress={handleRestore} style={styles.linkRow}>
-          <Text style={styles.rowText}>Restore purchases</Text>
+          <Text style={styles.rowText}>{t('set.restore')}</Text>
           <Text style={styles.rowChevron}>›</Text>
         </Pressable>
 
         <Pressable onPress={() => Linking.openURL(PRIVACY_URL)} style={styles.linkRow}>
-          <Text style={styles.rowText}>Privacy Policy</Text>
+          <Text style={styles.rowText}>{t('set.privacy')}</Text>
           <Text style={styles.rowChevron}>›</Text>
         </Pressable>
         <Pressable onPress={() => Linking.openURL(TERMS_URL)} style={styles.linkRow}>
-          <Text style={styles.rowText}>Terms of Use</Text>
+          <Text style={styles.rowText}>{t('set.terms')}</Text>
           <Text style={styles.rowChevron}>›</Text>
         </Pressable>
         <Pressable onPress={() => Linking.openURL(DELETE_DATA_URL)} style={styles.linkRow}>
-          <Text style={styles.rowText}>Delete my data</Text>
+          <Text style={styles.rowText}>{t('set.deleteData')}</Text>
           <Text style={styles.rowChevron}>›</Text>
         </Pressable>
         <Pressable
           onPress={() => Linking.openURL('mailto:' + SUPPORT_EMAIL + '?subject=BizStreak%20support')}
           style={styles.linkRow}
         >
-          <Text style={styles.rowText}>Contact support</Text>
+          <Text style={styles.rowText}>{t('set.support')}</Text>
           <Text style={styles.rowChevron}>›</Text>
         </Pressable>
 
         <View style={styles.aboutBox}>
-          <Text style={styles.aboutTitle}>About BizStreak</Text>
+          <Text style={styles.aboutTitle}>{t('set.aboutTitle')}</Text>
           <Text style={styles.aboutBody}>
-            A simple streak tracker for the daily habits that keep a small business disciplined —
-            checking stock, following up on unpaid invoices, recording sales, and staying on top of
-            leads. All data stays on this device.
+            {t('set.aboutBody')}
           </Text>
-          <Text style={[styles.aboutBody, { marginTop: 12 }]}>Version {Constants.expoConfig?.version ?? '1.0.0'}</Text>
+          <Text style={[styles.aboutBody, { marginTop: 12 }]}>{t('set.version', { v: Constants.expoConfig?.version ?? '1.0.0' })}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

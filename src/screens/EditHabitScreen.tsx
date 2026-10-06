@@ -6,6 +6,7 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import { useT } from '../useT';
 import BackButton from '../components/BackButton';
 import EmojiPicker from '../components/EmojiPicker';
 import { HABIT_COLORS } from '../types';
@@ -16,6 +17,7 @@ export default function EditHabitScreen({ route, navigation }: Props) {
   const { habitId } = route.params;
   const { habits, updateHabit, deleteHabit } = useStore();
   const theme = useTheme();
+  const t = useT();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const habit = habits.find((h) => h.id === habitId);
 
@@ -26,7 +28,7 @@ export default function EditHabitScreen({ route, navigation }: Props) {
   if (!habit) {
     return (
       <SafeAreaView style={styles.safe}>
-        <Text style={styles.missing}>Habit not found.</Text>
+        <Text style={styles.missing}>{t('habit.notFound')}</Text>
       </SafeAreaView>
     );
   }
@@ -40,10 +42,10 @@ export default function EditHabitScreen({ route, navigation }: Props) {
   };
 
   const handleDelete = () => {
-    Alert.alert('Delete habit?', `"${habit.name}" and all its history will be removed.`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('edit.deleteTitle'), t('edit.deleteBody', { name: habit.name }), [
+      { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('edit.deleteConfirm'),
         style: 'destructive',
         onPress: () => {
           deleteHabit(habit.id);
@@ -57,23 +59,23 @@ export default function EditHabitScreen({ route, navigation }: Props) {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <BackButton onPress={() => navigation.goBack()} />
-        <Text style={styles.headerTitle}>Edit Habit</Text>
+        <Text style={styles.headerTitle}>{t('edit.title')}</Text>
         <Pressable onPress={handleSave} disabled={!canSave} hitSlop={10}>
-          <Text style={[styles.save, !canSave && styles.saveDisabled]}>Save</Text>
+          <Text style={[styles.save, !canSave && styles.saveDisabled]}>{t('add.save')}</Text>
         </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
-        <Text style={styles.sectionLabel}>Name</Text>
+        <Text style={styles.sectionLabel}>{t('edit.name')}</Text>
         <View style={styles.inputRow}>
           <TextInput value={emoji} onChangeText={setEmoji} maxLength={2} style={styles.emojiInput} />
           <TextInput value={name} onChangeText={setName} placeholderTextColor={theme.textFaint} style={styles.nameInput} />
         </View>
 
-        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>Pick an emoji</Text>
+        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.emoji')}</Text>
         <EmojiPicker value={emoji} onChange={setEmoji} />
 
-        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>Color</Text>
+        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.color')}</Text>
         <View style={styles.colorRow}>
           {HABIT_COLORS.map((c) => (
             <Pressable
@@ -89,11 +91,11 @@ export default function EditHabitScreen({ route, navigation }: Props) {
           disabled={!canSave}
           style={[styles.saveBtn, !canSave && styles.saveBtnDisabled]}
         >
-          <Text style={styles.saveBtnText}>Save changes</Text>
+          <Text style={styles.saveBtnText}>{t('edit.saveChanges')}</Text>
         </Pressable>
 
         <Pressable onPress={handleDelete} style={styles.deleteBtn}>
-          <Text style={styles.deleteBtnText}>Delete habit</Text>
+          <Text style={styles.deleteBtnText}>{t('edit.delete')}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

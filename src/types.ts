@@ -11,6 +11,8 @@ export interface Habit {
   days?: number[];
 }
 
+import type { Language } from './i18n';
+
 export type ThemeMode = 'dark' | 'light';
 
 export interface AppState {
@@ -20,6 +22,7 @@ export interface AppState {
   themeMode: ThemeMode;
   reminderEnabled: boolean;
   reminderTime: string; // "HH:MM", 24h
+  language: Language;
 }
 
 export const FREE_HABIT_LIMIT = 3;
@@ -36,21 +39,22 @@ export const HABIT_COLORS = [
 ];
 
 export interface HabitTemplate {
+  key: string; // translation key, e.g. tpl.stock
   emoji: string;
-  name: string;
+  name: string; // English fallback
 }
 
 export const HABIT_TEMPLATES: HabitTemplate[] = [
-  { emoji: '📦', name: "Check stock levels" },
-  { emoji: '💰', name: "Record today's sales" },
-  { emoji: '📞', name: 'Follow up unpaid invoices' },
-  { emoji: '🎯', name: 'Contact 3 new leads' },
-  { emoji: '📊', name: 'Review cash on hand' },
-  { emoji: '📱', name: 'Post on social media' },
-  { emoji: '📝', name: "Plan tomorrow's priorities" },
-  { emoji: '🧾', name: 'Update the books' },
-  { emoji: '🤝', name: 'Check in with a supplier' },
-  { emoji: '📈', name: "Review yesterday's numbers" },
+  { key: 'tpl.stock', emoji: '📦', name: "Check stock levels" },
+  { key: 'tpl.sales', emoji: '💰', name: "Record today's sales" },
+  { key: 'tpl.invoices', emoji: '📞', name: 'Follow up unpaid invoices' },
+  { key: 'tpl.leads', emoji: '🎯', name: 'Contact 3 new leads' },
+  { key: 'tpl.cash', emoji: '📊', name: 'Review cash on hand' },
+  { key: 'tpl.social', emoji: '📱', name: 'Post on social media' },
+  { key: 'tpl.plan', emoji: '📝', name: "Plan tomorrow's priorities" },
+  { key: 'tpl.books', emoji: '🧾', name: 'Update the books' },
+  { key: 'tpl.supplier', emoji: '🤝', name: 'Check in with a supplier' },
+  { key: 'tpl.numbers', emoji: '📈', name: "Review yesterday's numbers" },
 ];
 
 // Monday-first order for the day picker; values are JS getDay() numbers.

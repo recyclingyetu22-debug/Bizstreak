@@ -11,11 +11,13 @@ import HabitCard from '../components/HabitCard';
 import { FREE_HABIT_LIMIT } from '../types';
 import { todayISO } from '../streaks';
 import { getSmartTip } from '../insights';
+import { useT } from '../useT';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export default function HomeScreen({ navigation }: Props) {
-  const { habits, isPro, toggleHabitDate, reorderHabit } = useStore();
+  const { habits, isPro, toggleHabitDate, reorderHabit, language } = useStore();
+  const t = useT();
   const theme = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [editMode, setEditMode] = useState(false);
@@ -27,7 +29,7 @@ export default function HomeScreen({ navigation }: Props) {
   // toggle replaces the array), not on every render — cheap either way at
   // realistic habit counts, but no reason to redo the weekday scan for
   // unrelated re-renders like the edit-mode toggle.
-  const smartTip = useMemo(() => getSmartTip(habits), [habits]);
+  const smartTip = useMemo(() => getSmartTip(habits, language), [habits, language]);
 
   const handleAddPress = () => {
     if (!isPro && habits.length >= FREE_HABIT_LIMIT) {
@@ -38,10 +40,10 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   const progressMessage = () => {
-    if (habits.length === 0) return 'Build the habits that grow your business';
-    if (doneTodayCount === habits.length) return 'All done for today. Strong work. 🔥';
-    if (doneTodayCount === 0) return `${habits.length} habit${habits.length > 1 ? 's' : ''} waiting on you today`;
-    return `${doneTodayCount}/${habits.length} done today`;
+    if (habits.length === 0) return t('home.sub');
+    if (doneTodayCount === habits.length) return t('home.allDone');
+    if (doneTodayCount === 0) return t('home.waiting', { n: habits.length });
+    return t('home.progress', { done: doneTodayCount, total: habits.length });
   };
 
   return (
@@ -61,12 +63,12 @@ export default function HomeScreen({ navigation }: Props) {
         <View style={styles.headerActions}>
           {!editMode && (
             <Pressable onPress={handleAddPress} hitSlop={10} style={styles.editToggle}>
-              <Text style={styles.editToggleText}>+ Add</Text>
+              <Text style={styles.editToggleText}>{t('home.add')}</Text>
             </Pressable>
           )}
           {habits.length > 0 && (
             <Pressable onPress={() => setEditMode((v) => !v)} hitSlop={10} style={styles.editToggle}>
-              <Text style={styles.editToggleText}>{editMode ? 'Done' : 'Edit'}</Text>
+              <Text style={styles.editToggleText}>{editMode ? t('home.done') : t('home.edit')}</Text>
             </Pressable>
           )}
           <Pressable onPress={() => navigation.navigate('Settings')} hitSlop={10} style={styles.settingsBtn}>
@@ -85,13 +87,12 @@ export default function HomeScreen({ navigation }: Props) {
       {habits.length === 0 ? (
         <View style={styles.empty}>
           <Text style={styles.emptyEmoji}>📈</Text>
-          <Text style={styles.emptyTitle}>No habits yet</Text>
+          <Text style={styles.emptyTitle}>{t('home.emptyTitle')}</Text>
           <Text style={styles.emptyBody}>
-            Add the daily disciplines that keep your business moving — checking stock, following up on
-            payments, recording sales.
+            {t('home.emptyBody')}
           </Text>
           <Pressable onPress={handleAddPress} style={styles.emptyBtn}>
-            <Text style={styles.emptyBtnText}>Add your first habit</Text>
+            <Text style={styles.emptyBtnText}>{t('home.emptyBtn')}</Text>
           </Pressable>
         </View>
       ) : (

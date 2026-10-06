@@ -1,0 +1,343 @@
+// All user-facing text, in English and French. `fr` is typed against `en`, so
+// the compiler fails if a key is added in one language and forgotten in the other.
+
+export type Language = 'en' | 'fr';
+type Vars = Record<string, string | number>;
+type Entry = string | ((v: Vars) => string);
+
+const plural = (n: unknown, one: string, many: string) => (Number(n) > 1 ? many : one);
+
+const en = {
+  back: '‹ Back',
+  cancel: 'Cancel',
+
+  'onb.skip': 'Skip',
+  'onb.next': 'Next',
+  'onb.start': 'Get started',
+  'onb.1.title': 'Build business discipline',
+  'onb.1.body':
+    'Track the small daily actions that actually grow your business — checking stock, following up on payments, recording sales.',
+  'onb.2.title': 'See your streak grow',
+  'onb.2.body':
+    'A simple grid, like the one developers use for code commits, shows your consistency at a glance. Missing a day is visible — so you show up.',
+  'onb.3.title': 'Private by default',
+  'onb.3.body': 'Everything stays on your device. No account, no sign-up. Start tracking in ten seconds.',
+
+  'home.sub': 'Build the habits that grow your business',
+  'home.allDone': 'All done for today. Strong work. 🔥',
+  'home.waiting': (v: Vars) => `${v.n} ${plural(v.n, 'habit', 'habits')} waiting on you today`,
+  'home.progress': (v: Vars) => `${v.done}/${v.total} done today`,
+  'home.add': '+ Add',
+  'home.edit': 'Edit',
+  'home.done': 'Done',
+  'home.emptyTitle': 'No habits yet',
+  'home.emptyBody':
+    'Add the daily disciplines that keep your business moving — checking stock, following up on payments, recording sales.',
+  'home.emptyBtn': 'Add your first habit',
+
+  'add.title': 'New Habit',
+  'edit.title': 'Edit Habit',
+  'add.quick': 'Quick add',
+  'add.own': 'Or write your own',
+  'add.placeholder': 'e.g. Call 3 clients',
+  'add.emoji': 'Pick an emoji',
+  'add.color': 'Color',
+  'add.save': 'Save',
+  'add.saveHabit': 'Save habit',
+  'edit.name': 'Name',
+  'edit.saveChanges': 'Save changes',
+  'edit.delete': 'Delete habit',
+  'edit.deleteTitle': 'Delete habit?',
+  'edit.deleteConfirm': 'Delete',
+  'edit.deleteBody': (v: Vars) => `"${v.name}" and all its history will be removed.`,
+  'habit.notFound': 'Habit not found.',
+
+  'tpl.stock': 'Check stock levels',
+  'tpl.sales': "Record today's sales",
+  'tpl.invoices': 'Follow up unpaid invoices',
+  'tpl.leads': 'Contact 3 new leads',
+  'tpl.cash': 'Review cash on hand',
+  'tpl.social': 'Post on social media',
+  'tpl.plan': "Plan tomorrow's priorities",
+  'tpl.books': 'Update the books',
+  'tpl.supplier': 'Check in with a supplier',
+  'tpl.numbers': "Review yesterday's numbers",
+
+  'det.markDone': 'Mark today done',
+  'det.doneToday': '✓ Done today',
+  'det.edit': 'Edit',
+  'det.streakDays': (v: Vars) => `${v.n}-day streak`,
+  'det.tracked': 'Tracked with BizStreak',
+  'det.share': '↗ Share my streak',
+  'det.preparing': 'Preparing…',
+  'det.current': 'Current streak',
+  'det.best': 'Best streak',
+  'det.last30': 'Last 30 days',
+  'det.history': 'Full history',
+  'det.hint': 'Tap any past day to toggle it.',
+  'det.shareTitle': 'Share your streak',
+  'det.shareUnavailableTitle': 'Sharing unavailable',
+  'det.shareUnavailableBody': 'Sharing is not available on this device.',
+  'det.shareFailedTitle': 'Could not share',
+  'det.shareFailedBody': 'Something went wrong creating the image.',
+
+  'set.title': 'Settings',
+  'set.freePlan': 'Free plan',
+  'set.proTitle': 'BizStreak Pro',
+  'set.unlimited': 'Unlimited habits unlocked.',
+  'set.used': (v: Vars) => `${v.n}/3 habits used`,
+  'set.upgrade': 'Upgrade',
+  'set.reminder': 'Daily reminder',
+  'set.remindMe': 'Remind me every day',
+  'set.appearance': 'Appearance',
+  'set.dark': 'Dark',
+  'set.light': 'Light',
+  'set.language': 'Language',
+  'set.restore': 'Restore purchases',
+  'set.privacy': 'Privacy Policy',
+  'set.terms': 'Terms of Use',
+  'set.deleteData': 'Delete my data',
+  'set.support': 'Contact support',
+  'set.aboutTitle': 'About BizStreak',
+  'set.aboutBody':
+    'A simple streak tracker for the daily habits that keep a small business disciplined — checking stock, following up on unpaid invoices, recording sales, and staying on top of leads. All data stays on this device.',
+  'set.version': (v: Vars) => `Version ${v.v}`,
+  'set.restoredTitle': 'Restored',
+  'set.restoredBody': 'Your Pro purchase has been restored.',
+  'set.nothingTitle': 'Nothing to restore',
+  'set.nothingBody': 'No active purchase was found for this account.',
+  'set.restoreFailed': 'Restore failed',
+  'set.previewBuild': 'Preview build',
+  'set.genericError': 'Something went wrong.',
+  'set.notifUnavailableTitle': 'Not available in this test build',
+  'set.notifUnavailableBody':
+    "Reminders need a real build to work — they're disabled while testing in Expo Go. This will work once BizStreak is built properly.",
+  'set.notifDisabledTitle': 'Notifications disabled',
+  'set.notifDisabledBody': 'Enable notifications for BizStreak in your phone settings to get daily reminders.',
+
+  'rem.title': 'Keep your streak alive 🔥',
+  'rem.body': "Take two minutes — check off today's business habits.",
+  'rem.channel': 'Daily reminders',
+
+  'pay.title': 'Go Pro',
+  'pay.subtitle': 'Track every habit that keeps your business disciplined.',
+  'pay.f1': 'Unlimited habits (free plan is capped at 3)',
+  'pay.f2': 'Everything in the free plan, with no limits',
+  'pay.f3': 'Support future updates',
+  'pay.yearly': 'Yearly',
+  'pay.monthly': 'Monthly',
+  'pay.lifetime': 'Lifetime',
+  'pay.yearlyPrice': '$9.99/yr',
+  'pay.monthlyPrice': '$1.00/mo',
+  'pay.lifetimePrice': '$30.00',
+  'pay.yearlySub': 'Just $0.83/month',
+  'pay.lifetimeSub': 'Pay once, own it forever',
+  'pay.badge': 'BEST VALUE',
+  'pay.continue': 'Continue',
+  'pay.fine': 'Cancel anytime. Subscriptions renew automatically until canceled.',
+  'pay.expoGo': "Preview build — purchases aren't testable in Expo Go.",
+  'pay.terms': 'Terms of Use',
+  'pay.privacy': 'Privacy Policy',
+  'pay.proTitle': 'You’re Pro!',
+  'pay.proBody': 'Unlimited habits are unlocked.',
+  'pay.noUnlockTitle': 'Purchase did not unlock Pro',
+  'pay.noUnlockBody': 'Please try again, or contact support if you were charged.',
+  'pay.failed': 'Purchase failed',
+  'pay.generic': 'Something went wrong. Please try again.',
+
+  'err.notAvailable': 'Purchases are not available in this version yet. Please check back soon.',
+  'err.noRestore': 'Purchases are not available in this version yet, so there is nothing to restore.',
+  'err.expoGo': "Purchases need the full app build to test — they're not available in this Expo Go preview.",
+
+  'tip.weak': (v: Vars) =>
+    `You complete only ${v.pct}% of your habits on ${v.day} — your weakest day. Try checking in first thing that morning to protect your streak.`,
+  'day.0': 'Sundays',
+  'day.1': 'Mondays',
+  'day.2': 'Tuesdays',
+  'day.3': 'Wednesdays',
+  'day.4': 'Thursdays',
+  'day.5': 'Fridays',
+  'day.6': 'Saturdays',
+} as const;
+
+export type TKey = keyof typeof en;
+
+const fr: Record<TKey, Entry> = {
+  back: '‹ Retour',
+  cancel: 'Annuler',
+
+  'onb.skip': 'Passer',
+  'onb.next': 'Suivant',
+  'onb.start': 'Commencer',
+  'onb.1.title': "Construisez de la discipline",
+  'onb.1.body':
+    "Suivez les petites actions quotidiennes qui font vraiment grandir votre entreprise — vérifier le stock, relancer les paiements, enregistrer les ventes.",
+  'onb.2.title': 'Regardez votre série grandir',
+  'onb.2.body':
+    "Une grille simple, comme celle des développeurs pour leurs contributions, montre votre régularité en un coup d'œil. Un jour manqué se voit — alors vous êtes au rendez-vous.",
+  'onb.3.title': 'Privé par défaut',
+  'onb.3.body':
+    "Tout reste sur votre appareil. Pas de compte, pas d'inscription. Commencez en dix secondes.",
+
+  'home.sub': 'Construisez les habitudes qui font grandir votre entreprise',
+  'home.allDone': "Tout est fait pour aujourd'hui. Bravo ! 🔥",
+  'home.waiting': (v: Vars) =>
+    `${v.n} ${plural(v.n, 'habitude vous attend', 'habitudes vous attendent')} aujourd'hui`,
+  'home.progress': (v: Vars) => `${v.done}/${v.total} faites aujourd'hui`,
+  'home.add': '+ Ajouter',
+  'home.edit': 'Modifier',
+  'home.done': 'Terminé',
+  'home.emptyTitle': "Aucune habitude pour l'instant",
+  'home.emptyBody':
+    "Ajoutez les disciplines quotidiennes qui font avancer votre entreprise — vérifier le stock, relancer les paiements, enregistrer les ventes.",
+  'home.emptyBtn': 'Ajouter ma première habitude',
+
+  'add.title': 'Nouvelle habitude',
+  'edit.title': "Modifier l'habitude",
+  'add.quick': 'Ajout rapide',
+  'add.own': 'Ou écrivez la vôtre',
+  'add.placeholder': 'ex. : Appeler 3 clients',
+  'add.emoji': 'Choisissez un emoji',
+  'add.color': 'Couleur',
+  'add.save': 'Enregistrer',
+  'add.saveHabit': "Enregistrer l'habitude",
+  'edit.name': 'Nom',
+  'edit.saveChanges': 'Enregistrer les modifications',
+  'edit.delete': "Supprimer l'habitude",
+  'edit.deleteTitle': "Supprimer l'habitude ?",
+  'edit.deleteConfirm': 'Supprimer',
+  'edit.deleteBody': (v: Vars) => `« ${v.name} » et tout son historique seront supprimés.`,
+  'habit.notFound': 'Habitude introuvable.',
+
+  'tpl.stock': 'Vérifier le stock',
+  'tpl.sales': 'Enregistrer les ventes du jour',
+  'tpl.invoices': 'Relancer les factures impayées',
+  'tpl.leads': 'Contacter 3 nouveaux prospects',
+  'tpl.cash': 'Vérifier la trésorerie',
+  'tpl.social': 'Publier sur les réseaux sociaux',
+  'tpl.plan': 'Planifier les priorités de demain',
+  'tpl.books': 'Mettre à jour la comptabilité',
+  'tpl.supplier': 'Contacter un fournisseur',
+  'tpl.numbers': "Analyser les chiffres d'hier",
+
+  'det.markDone': "Marquer aujourd'hui comme fait",
+  'det.doneToday': "✓ Fait aujourd'hui",
+  'det.edit': 'Modifier',
+  'det.streakDays': (v: Vars) => `Série de ${v.n} ${plural(v.n, 'jour', 'jours')}`,
+  'det.tracked': 'Suivi avec BizStreak',
+  'det.share': '↗ Partager ma série',
+  'det.preparing': 'Préparation…',
+  'det.current': 'Série actuelle',
+  'det.best': 'Meilleure série',
+  'det.last30': '30 derniers jours',
+  'det.history': 'Historique complet',
+  'det.hint': 'Touchez un jour passé pour le modifier.',
+  'det.shareTitle': 'Partagez votre série',
+  'det.shareUnavailableTitle': 'Partage indisponible',
+  'det.shareUnavailableBody': "Le partage n'est pas disponible sur cet appareil.",
+  'det.shareFailedTitle': 'Partage impossible',
+  'det.shareFailedBody': "Un problème est survenu lors de la création de l'image.",
+
+  'set.title': 'Paramètres',
+  'set.freePlan': 'Formule gratuite',
+  'set.proTitle': 'BizStreak Pro',
+  'set.unlimited': 'Habitudes illimitées débloquées.',
+  'set.used': (v: Vars) => `${v.n}/3 habitudes utilisées`,
+  'set.upgrade': 'Passer à Pro',
+  'set.reminder': 'Rappel quotidien',
+  'set.remindMe': 'Me rappeler chaque jour',
+  'set.appearance': 'Apparence',
+  'set.dark': 'Sombre',
+  'set.light': 'Clair',
+  'set.language': 'Langue',
+  'set.restore': 'Restaurer les achats',
+  'set.privacy': 'Politique de confidentialité',
+  'set.terms': "Conditions d'utilisation",
+  'set.deleteData': 'Supprimer mes données',
+  'set.support': 'Contacter le support',
+  'set.aboutTitle': 'À propos de BizStreak',
+  'set.aboutBody':
+    "Un suivi de séries simple pour les habitudes quotidiennes qui gardent une petite entreprise disciplinée — vérifier le stock, relancer les factures impayées, enregistrer les ventes et suivre les prospects. Toutes les données restent sur cet appareil.",
+  'set.version': (v: Vars) => `Version ${v.v}`,
+  'set.restoredTitle': 'Achat restauré',
+  'set.restoredBody': 'Votre achat Pro a été restauré.',
+  'set.nothingTitle': 'Rien à restaurer',
+  'set.nothingBody': "Aucun achat actif n'a été trouvé pour ce compte.",
+  'set.restoreFailed': 'Échec de la restauration',
+  'set.previewBuild': 'Version de test',
+  'set.genericError': "Un problème est survenu.",
+  'set.notifUnavailableTitle': 'Indisponible dans cette version de test',
+  'set.notifUnavailableBody':
+    "Les rappels nécessitent une vraie version de l'application — ils sont désactivés dans Expo Go.",
+  'set.notifDisabledTitle': 'Notifications désactivées',
+  'set.notifDisabledBody':
+    "Activez les notifications pour BizStreak dans les paramètres de votre téléphone pour recevoir les rappels quotidiens.",
+
+  'rem.title': 'Gardez votre série en vie 🔥',
+  'rem.body': "Prenez deux minutes — cochez vos habitudes du jour.",
+  'rem.channel': 'Rappels quotidiens',
+
+  'pay.title': 'Passer à Pro',
+  'pay.subtitle': 'Suivez chaque habitude qui garde votre entreprise disciplinée.',
+  'pay.f1': 'Habitudes illimitées (la formule gratuite est limitée à 3)',
+  'pay.f2': 'Tout ce qui est gratuit, sans limite',
+  'pay.f3': 'Soutenez les prochaines mises à jour',
+  'pay.yearly': 'Annuel',
+  'pay.monthly': 'Mensuel',
+  'pay.lifetime': 'À vie',
+  'pay.yearlyPrice': '9,99 $/an',
+  'pay.monthlyPrice': '1,00 $/mois',
+  'pay.lifetimePrice': '30,00 $',
+  'pay.yearlySub': 'Seulement 0,83 $/mois',
+  'pay.lifetimeSub': 'Payez une fois, gardez pour toujours',
+  'pay.badge': 'MEILLEURE OFFRE',
+  'pay.continue': 'Continuer',
+  'pay.fine': "Annulez à tout moment. Les abonnements se renouvellent automatiquement jusqu'à l'annulation.",
+  'pay.expoGo': "Version de test — les achats ne sont pas testables dans Expo Go.",
+  'pay.terms': "Conditions d'utilisation",
+  'pay.privacy': 'Politique de confidentialité',
+  'pay.proTitle': 'Vous êtes Pro !',
+  'pay.proBody': 'Les habitudes illimitées sont débloquées.',
+  'pay.noUnlockTitle': "L'achat n'a pas débloqué Pro",
+  'pay.noUnlockBody': 'Veuillez réessayer, ou contactez le support si vous avez été débité.',
+  'pay.failed': "Échec de l'achat",
+  'pay.generic': 'Un problème est survenu. Veuillez réessayer.',
+
+  'err.notAvailable': "Les achats ne sont pas encore disponibles dans cette version. Revenez bientôt.",
+  'err.noRestore': "Les achats ne sont pas encore disponibles dans cette version, il n'y a donc rien à restaurer.",
+  'err.expoGo': "Les achats nécessitent la version complète de l'application — ils ne sont pas disponibles dans cet aperçu Expo Go.",
+
+  'tip.weak': (v: Vars) =>
+    `Vous ne réalisez que ${v.pct} % de vos habitudes le ${v.day} — votre jour le plus faible. Essayez de cocher dès le matin pour protéger votre série.`,
+  'day.0': 'dimanche',
+  'day.1': 'lundi',
+  'day.2': 'mardi',
+  'day.3': 'mercredi',
+  'day.4': 'jeudi',
+  'day.5': 'vendredi',
+  'day.6': 'samedi',
+};
+
+/** Maps a purchase error code (see purchases.ts) to a translated message. */
+export function purchaseErrorKey(code?: string): TKey | null {
+  if (code === 'notAvailable') return 'err.notAvailable';
+  if (code === 'noRestore') return 'err.noRestore';
+  if (code === 'expoGo') return 'err.expoGo';
+  return null;
+}
+
+export function translate(lang: Language, key: TKey, vars: Vars = {}): string {
+  const entry: Entry = (lang === 'fr' ? fr[key] : (en[key] as Entry)) ?? (en[key] as Entry) ?? key;
+  return typeof entry === 'function' ? entry(vars) : entry;
+}
+
+/** English unless the phone itself is set to French. The user can still
+ * change it in Settings. */
+export function detectLanguage(): Language {
+  try {
+    const locale = Intl.DateTimeFormat().resolvedOptions().locale ?? '';
+    return locale.toLowerCase().startsWith('fr') ? 'fr' : 'en';
+  } catch {
+    return 'en';
+  }
+}

@@ -62,22 +62,25 @@ function matchPackage(offering: PurchasesOffering, planId: PlanId): PurchasesPac
   return offering.lifetime ?? undefined;
 }
 
+/** Errors carry a `code`; screens turn it into text in the user's language. */
+function fail(code: 'notAvailable' | 'noRestore' | 'expoGo' | 'noOffering' | 'noPackage'): never {
+  const err = new Error(code) as Error & { code: string };
+  err.code = code;
+  throw err;
+}
+
 async function getPlanPackage(planId: PlanId): Promise<PurchasesPackage> {
-  if (isExpoGo) {
-    throw new Error("Purchases need the full app build to test — they're not available in this Expo Go preview.");
-  }
-  if (!configured) {
-    throw new Error('Purchases are not available in this version yet. Please check back soon.');
-  }
+  if (isExpoGo) fail('expoGo');
+  if (!configured) fail('notAvailable');
   const Purchases = await loadPurchasesModule();
   const offerings = await Purchases.getOfferings();
   const current = offerings.current;
   if (!current) {
-    throw new Error('No current RevenueCat offering is set up for this app yet.');
+    fail('noOffering');
   }
   const pkg = matchPackage(current, planId);
   if (!pkg) {
-    throw new Error(`No "${planId}" package found in the current RevenueCat offering.`);
+    fail('noPackage');
   }
   return pkg;
 }
@@ -90,12 +93,8 @@ export async function purchasePlan(planId: PlanId): Promise<CustomerInfo> {
 }
 
 export async function restorePurchases(): Promise<CustomerInfo> {
-  if (isExpoGo) {
-    throw new Error("Purchases need the full app build to test — they're not available in this Expo Go preview.");
-  }
-  if (!configured) {
-    throw new Error('Purchases are not available in this version yet, so there is nothing to restore.');
-  }
+  if (isExpoGo) fail('expoGo');
+  if (!configured) fail('noRestore');
   const Purchases = await loadPurchasesModule();
   return Purchases.restorePurchases();
 }

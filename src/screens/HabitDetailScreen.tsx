@@ -8,6 +8,7 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import { useT } from '../useT';
 import ContributionGrid from '../components/ContributionGrid';
 import { generateGridWeeks, getBestStreak, getCompletionRate, getCurrentStreak, todayISO } from '../streaks';
 
@@ -17,6 +18,7 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
   const { habitId } = route.params;
   const { habits, toggleHabitDate } = useStore();
   const theme = useTheme();
+  const t = useT();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const shareCardRef = useRef<View>(null);
   const [sharing, setSharing] = useState(false);
@@ -25,7 +27,7 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
   if (!habit) {
     return (
       <SafeAreaView style={styles.safe}>
-        <Text style={styles.missing}>Habit not found.</Text>
+        <Text style={styles.missing}>{t('habit.notFound')}</Text>
       </SafeAreaView>
     );
   }
@@ -45,12 +47,12 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
       const uri = await captureRef(shareCardRef, { format: 'png', quality: 1 });
       const available = await Sharing.isAvailableAsync();
       if (available) {
-        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: 'Share your streak' });
+        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: t('det.shareTitle') });
       } else {
-        Alert.alert('Sharing unavailable', 'Sharing is not available on this device.');
+        Alert.alert(t('det.shareUnavailableTitle'), t('det.shareUnavailableBody'));
       }
     } catch (e) {
-      Alert.alert('Could not share', 'Something went wrong creating the image.');
+      Alert.alert(t('det.shareFailedTitle'), t('det.shareFailedBody'));
     } finally {
       setSharing(false);
     }
@@ -60,10 +62,10 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={10}>
-          <Text style={styles.back}>‹ Back</Text>
+          <Text style={styles.back}>{t('back')}</Text>
         </Pressable>
         <Pressable onPress={() => navigation.navigate('EditHabit', { habitId: habit.id })} hitSlop={10}>
-          <Text style={styles.edit}>Edit</Text>
+          <Text style={styles.edit}>{t('det.edit')}</Text>
         </Pressable>
       </View>
 
@@ -76,7 +78,7 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
           ]}
         >
           <Text style={[styles.todayBtnText, { color: doneToday ? theme.accentOn : theme.text }]}>
-            {doneToday ? '✓ Done today' : 'Mark today done'}
+            {doneToday ? t('det.doneToday') : t('det.markDone')}
           </Text>
         </Pressable>
 
@@ -86,33 +88,33 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
             <Text style={styles.shareEmoji}>{habit.emoji}</Text>
             <View style={{ flex: 1 }}>
               <Text style={styles.shareName}>{habit.name}</Text>
-              <Text style={styles.shareStreak}>🔥 {currentStreak}-day streak</Text>
+              <Text style={styles.shareStreak}>🔥 {t('det.streakDays', { n: currentStreak })}</Text>
             </View>
           </View>
           <ContributionGrid weeks={shareWeeks} color={habit.color} cellSize={13} gap={4} todayDate={today} />
-          <Text style={styles.shareBrand}>Tracked with BizStreak</Text>
+          <Text style={styles.shareBrand}>{t('det.tracked')}</Text>
         </View>
 
         <Pressable onPress={handleShare} disabled={sharing} style={styles.shareBtn}>
-          <Text style={styles.shareBtnText}>{sharing ? 'Preparing…' : '↗ Share my streak'}</Text>
+          <Text style={styles.shareBtnText}>{sharing ? t('det.preparing') : t('det.share')}</Text>
         </Pressable>
 
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>🔥 {currentStreak}</Text>
-            <Text style={styles.statLabel}>Current streak</Text>
+            <Text style={styles.statLabel}>{t('det.current')}</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>🏆 {bestStreak}</Text>
-            <Text style={styles.statLabel}>Best streak</Text>
+            <Text style={styles.statLabel}>{t('det.best')}</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>{rate30}%</Text>
-            <Text style={styles.statLabel}>Last 30 days</Text>
+            <Text style={styles.statLabel}>{t('det.last30')}</Text>
           </View>
         </View>
 
-        <Text style={styles.sectionLabel}>Full history</Text>
+        <Text style={styles.sectionLabel}>{t('det.history')}</Text>
         <View style={styles.gridCard}>
           <ContributionGrid
             weeks={weeks}
@@ -124,7 +126,7 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
             onCellPress={(date) => toggleHabitDate(habit.id, date)}
           />
         </View>
-        <Text style={styles.hint}>Tap any past day to toggle it.</Text>
+        <Text style={styles.hint}>{t('det.hint')}</Text>
       </ScrollView>
     </SafeAreaView>
   );

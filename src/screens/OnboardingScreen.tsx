@@ -6,33 +6,24 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import { useT } from '../useT';
+import type { TKey } from '../i18n';
 import BackButton from '../components/BackButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
 const { width } = Dimensions.get('window');
 
-const SLIDES = [
-  {
-    emoji: '📈',
-    title: 'Build business discipline',
-    body: 'Track the small daily actions that actually grow your business — checking stock, following up on payments, recording sales.',
-  },
-  {
-    emoji: '🔥',
-    title: 'See your streak grow',
-    body: 'A simple grid, like the one developers use for code commits, shows your consistency at a glance. Missing a day is visible — so you show up.',
-  },
-  {
-    emoji: '🔒',
-    title: 'Private by default',
-    body: 'Everything stays on your device. No account, no sign-up. Start tracking in ten seconds.',
-  },
+const SLIDES: { emoji: string; title: TKey; body: TKey }[] = [
+  { emoji: '📈', title: 'onb.1.title', body: 'onb.1.body' },
+  { emoji: '🔥', title: 'onb.2.title', body: 'onb.2.body' },
+  { emoji: '🔒', title: 'onb.3.title', body: 'onb.3.body' },
 ];
 
 export default function OnboardingScreen({ navigation }: Props) {
   const { setOnboarded } = useStore();
   const theme = useTheme();
+  const t = useT();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [index, setIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
@@ -65,7 +56,7 @@ export default function OnboardingScreen({ navigation }: Props) {
         <BackButton onPress={() => navigation.goBack()} style={styles.back} />
       )}
       <Pressable onPress={finish} style={styles.skip} hitSlop={10}>
-        <Text style={styles.skipText}>Skip</Text>
+        <Text style={styles.skipText}>{t('onb.skip')}</Text>
       </Pressable>
 
       <ScrollView
@@ -79,8 +70,8 @@ export default function OnboardingScreen({ navigation }: Props) {
         {SLIDES.map((s) => (
           <View key={s.title} style={[styles.slide, { width }]}>
             <Text style={styles.emoji}>{s.emoji}</Text>
-            <Text style={styles.title}>{s.title}</Text>
-            <Text style={styles.body}>{s.body}</Text>
+            <Text style={styles.title}>{t(s.title)}</Text>
+            <Text style={styles.body}>{t(s.body)}</Text>
           </View>
         ))}
       </ScrollView>
@@ -92,7 +83,7 @@ export default function OnboardingScreen({ navigation }: Props) {
           ))}
         </View>
         <Pressable onPress={next} style={styles.cta}>
-          <Text style={styles.ctaText}>{index === SLIDES.length - 1 ? 'Get started' : 'Next'}</Text>
+          <Text style={styles.ctaText}>{index === SLIDES.length - 1 ? t('onb.start') : t('onb.next')}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

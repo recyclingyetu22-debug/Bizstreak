@@ -6,29 +6,28 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import { useT } from '../useT';
 import BackButton from '../components/BackButton';
 import { isPurchasesUsable, purchasePlan, PRO_ENTITLEMENT_ID } from '../purchases';
 import { PRIVACY_URL, TERMS_URL } from '../links';
+import { TKey, purchaseErrorKey } from '../i18n';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 
 type PlanId = 'monthly' | 'yearly' | 'lifetime';
 
-const PLANS: { id: PlanId; label: string; price: string; sub?: string; badge?: string }[] = [
-  { id: 'yearly', label: 'Yearly', price: '$9.99/yr', sub: 'Just $0.83/month', badge: 'BEST VALUE' },
-  { id: 'monthly', label: 'Monthly', price: '$1.00/mo' },
-  { id: 'lifetime', label: 'Lifetime', price: '$30.00', sub: 'Pay once, own it forever' },
+const PLANS: { id: PlanId; label: TKey; price: TKey; sub?: TKey; badge?: TKey }[] = [
+  { id: 'yearly', label: 'pay.yearly', price: 'pay.yearlyPrice', sub: 'pay.yearlySub', badge: 'pay.badge' },
+  { id: 'monthly', label: 'pay.monthly', price: 'pay.monthlyPrice' },
+  { id: 'lifetime', label: 'pay.lifetime', price: 'pay.lifetimePrice', sub: 'pay.lifetimeSub' },
 ];
 
-const FEATURES = [
-  'Unlimited habits (free plan is capped at 3)',
-  'Everything in the free plan, with no limits',
-  'Support future updates',
-];
+const FEATURES: TKey[] = ['pay.f1', 'pay.f2', 'pay.f3'];
 
 export default function PaywallScreen({ navigation }: Props) {
   const { setPro } = useStore();
   const theme = useTheme();
+  const t = useT();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [selected, setSelected] = useState<PlanId>('yearly');
   const [purchasing, setPurchasing] = useState(false);
@@ -39,14 +38,15 @@ export default function PaywallScreen({ navigation }: Props) {
       const info = await purchasePlan(selected);
       if (info.entitlements.active[PRO_ENTITLEMENT_ID]) {
         setPro(true);
-        Alert.alert('You’re Pro!', 'Unlimited habits are unlocked.');
+        Alert.alert(t('pay.proTitle'), t('pay.proBody'));
         navigation.goBack();
       } else {
-        Alert.alert('Purchase did not unlock Pro', 'Please try again, or contact support if you were charged.');
+        Alert.alert(t('pay.noUnlockTitle'), t('pay.noUnlockBody'));
       }
     } catch (err: any) {
       if (err?.userCancelled) return; // they backed out of the store sheet — not a real error
-      Alert.alert(isPurchasesUsable() ? 'Purchase failed' : 'Preview build', err?.message ?? 'Something went wrong. Please try again.');
+      const known = purchaseErrorKey(err?.code);
+      Alert.alert(t('pay.failed'), known ? t(known) : t('pay.generic'));
     } finally {
       setPurchasing(false);
     }
@@ -63,14 +63,14 @@ export default function PaywallScreen({ navigation }: Props) {
         </View>
 
         <Text style={styles.crown}>🔥</Text>
-        <Text style={styles.title}>Go Pro</Text>
-        <Text style={styles.subtitle}>Track every habit that keeps your business disciplined.</Text>
+        <Text style={styles.title}>{t('pay.title')}</Text>
+        <Text style={styles.subtitle}>{t('pay.subtitle')}</Text>
 
         <View style={styles.featureList}>
           {FEATURES.map((f) => (
             <View key={f} style={styles.featureRow}>
               <Text style={styles.featureCheck}>✓</Text>
-              <Text style={styles.featureText}>{f}</Text>
+              <Text style={styles.featureText}>{t(f)}</Text>
             </View>
           ))}
         </View>
@@ -84,33 +84,33 @@ export default function PaywallScreen({ navigation }: Props) {
             >
               {p.badge && (
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{p.badge}</Text>
+                  <Text style={styles.badgeText}>{t(p.badge)}</Text>
                 </View>
               )}
-              <Text style={styles.planLabel}>{p.label}</Text>
-              <Text style={styles.planPrice}>{p.price}</Text>
-              {p.sub && <Text style={styles.planSub}>{p.sub}</Text>}
+              <Text style={styles.planLabel}>{t(p.label)}</Text>
+              <Text style={styles.planPrice}>{t(p.price)}</Text>
+              {p.sub && <Text style={styles.planSub}>{t(p.sub)}</Text>}
             </Pressable>
           ))}
         </View>
 
         <Pressable onPress={handleUnlock} disabled={purchasing} style={[styles.cta, purchasing && { opacity: 0.7 }]}>
-          {purchasing ? <ActivityIndicator color={theme.accentOn} /> : <Text style={styles.ctaText}>Continue</Text>}
+          {purchasing ? <ActivityIndicator color={theme.accentOn} /> : <Text style={styles.ctaText}>{t('pay.continue')}</Text>}
         </Pressable>
         <Text style={styles.fineprint}>
-          Cancel anytime. Subscriptions renew automatically until canceled.
+          {t('pay.fine')}
         </Text>
         <View style={styles.legalRow}>
           <Pressable onPress={() => Linking.openURL(TERMS_URL)} hitSlop={8}>
-            <Text style={styles.legalLink}>Terms of Use</Text>
+            <Text style={styles.legalLink}>{t('pay.terms')}</Text>
           </Pressable>
           <Text style={styles.fineprint}>  •  </Text>
           <Pressable onPress={() => Linking.openURL(PRIVACY_URL)} hitSlop={8}>
-            <Text style={styles.legalLink}>Privacy Policy</Text>
+            <Text style={styles.legalLink}>{t('pay.privacy')}</Text>
           </Pressable>
         </View>
         {!isPurchasesUsable() && (
-          <Text style={styles.fineprint}>Preview build — purchases aren't testable in Expo Go.</Text>
+          <Text style={styles.fineprint}>{t('pay.expoGo')}</Text>
         )}
       </ScrollView>
     </SafeAreaView>

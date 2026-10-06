@@ -12,9 +12,11 @@ import { RootStackParamList } from '../navigation';
 import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
+import { useT } from '../useT';
 import BackButton from '../components/BackButton';
 import EmojiPicker from '../components/EmojiPicker';
-import { HABIT_COLORS, HABIT_TEMPLATES } from '../types';
+import { HABIT_COLORS, HABIT_TEMPLATES, HabitTemplate } from '../types';
+import type { TKey } from '../i18n';
 import { todayISO } from '../streaks';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddHabit'>;
@@ -22,6 +24,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'AddHabit'>;
 export default function AddHabitScreen({ navigation }: Props) {
   const { addHabit } = useStore();
   const theme = useTheme();
+  const t = useT();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('✅');
@@ -29,9 +32,9 @@ export default function AddHabitScreen({ navigation }: Props) {
 
   const canSave = name.trim().length > 0;
 
-  const handleTemplatePress = (t: { emoji: string; name: string }) => {
-    setName(t.name);
-    setEmoji(t.emoji);
+  const handleTemplatePress = (tp: HabitTemplate) => {
+    setName(t(tp.key as TKey));
+    setEmoji(tp.emoji);
   };
 
   const handleSave = () => {
@@ -51,28 +54,28 @@ export default function AddHabitScreen({ navigation }: Props) {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <BackButton onPress={() => navigation.goBack()} />
-        <Text style={styles.headerTitle}>New Habit</Text>
+        <Text style={styles.headerTitle}>{t('add.title')}</Text>
         <Pressable onPress={handleSave} disabled={!canSave} hitSlop={10}>
-          <Text style={[styles.save, !canSave && styles.saveDisabled]}>Save</Text>
+          <Text style={[styles.save, !canSave && styles.saveDisabled]}>{t('add.save')}</Text>
         </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
-        <Text style={styles.sectionLabel}>Quick add</Text>
+        <Text style={styles.sectionLabel}>{t('add.quick')}</Text>
         <View style={styles.templateGrid}>
-          {HABIT_TEMPLATES.map((t) => (
+          {HABIT_TEMPLATES.map((tp) => (
             <Pressable
-              key={t.name}
-              onPress={() => handleTemplatePress(t)}
-              style={[styles.chip, name === t.name && styles.chipActive]}
+              key={tp.key}
+              onPress={() => handleTemplatePress(tp)}
+              style={[styles.chip, name === t(tp.key as TKey) && styles.chipActive]}
             >
-              <Text style={styles.chipEmoji}>{t.emoji}</Text>
-              <Text style={styles.chipText}>{t.name}</Text>
+              <Text style={styles.chipEmoji}>{tp.emoji}</Text>
+              <Text style={styles.chipText}>{t(tp.key as TKey)}</Text>
             </Pressable>
           ))}
         </View>
 
-        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>Or write your own</Text>
+        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.own')}</Text>
         <View style={styles.inputRow}>
           <TextInput
             value={emoji}
@@ -83,16 +86,16 @@ export default function AddHabitScreen({ navigation }: Props) {
           <TextInput
             value={name}
             onChangeText={setName}
-            placeholder="e.g. Call 3 clients"
+            placeholder={t('add.placeholder')}
             placeholderTextColor={theme.textFaint}
             style={styles.nameInput}
           />
         </View>
 
-        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>Pick an emoji</Text>
+        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.emoji')}</Text>
         <EmojiPicker value={emoji} onChange={setEmoji} />
 
-        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>Color</Text>
+        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.color')}</Text>
         <View style={styles.colorRow}>
           {HABIT_COLORS.map((c) => (
             <Pressable
@@ -112,7 +115,7 @@ export default function AddHabitScreen({ navigation }: Props) {
           disabled={!canSave}
           style={[styles.saveBtn, !canSave && styles.saveBtnDisabled]}
         >
-          <Text style={styles.saveBtnText}>Save habit</Text>
+          <Text style={styles.saveBtnText}>{t('add.saveHabit')}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

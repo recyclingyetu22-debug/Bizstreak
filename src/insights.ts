@@ -1,5 +1,6 @@
 import { Habit } from './types';
 import { addDays, todayISO } from './streaks';
+import { Language, translate } from './i18n';
 
 // A weekday tip needs at least this many occurrences of that weekday (summed
 // across all habits) before it's trusted as a real pattern, not noise from
@@ -15,7 +16,6 @@ const MIN_QUALIFYING_DAYS = 4;
 const MIN_GAP = 0.2;
 const MAX_WEAK_RATE = 0.7;
 
-const DAY_NAMES = ['Sundays', 'Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays'];
 
 function dowOfISO(dateISO: string): number {
   const [y, m, d] = dateISO.split('-').map(Number);
@@ -61,7 +61,7 @@ export interface Insight {
 /** One short, specific tip — or null when there isn't enough history yet, or
  * nothing stands out as a real pattern (both deliberate: a wrong or noisy
  * "insight" is worse than no insight at all). */
-export function getSmartTip(habits: Habit[]): Insight | null {
+export function getSmartTip(habits: Habit[], lang: Language = 'en'): Insight | null {
   if (habits.length === 0) return null;
 
   const qualifying = getWeekdayStats(habits).filter((s) => s.total >= MIN_SAMPLES_PER_DAY);
@@ -76,6 +76,6 @@ export function getSmartTip(habits: Habit[]): Insight | null {
   const pct = Math.round(weakest.rate * 100);
   return {
     emoji: '💡',
-    text: `You complete only ${pct}% of your habits on ${DAY_NAMES[weakest.dow]} — your weakest day. Try checking in first thing that morning to protect your streak.`,
+    text: translate(lang, 'tip.weak', { pct, day: translate(lang, `day.${weakest.dow}` as 'day.0') }),
   };
 }

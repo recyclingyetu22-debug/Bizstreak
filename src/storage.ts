@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from './types';
+import { detectLanguage } from './i18n';
 
 const STORAGE_KEY = '@bizstreak/state/v1';
 
@@ -10,6 +11,7 @@ const defaultState: AppState = {
   themeMode: 'dark',
   reminderEnabled: false,
   reminderTime: '09:00',
+  language: detectLanguage(),
 };
 
 export async function loadState(): Promise<AppState> {

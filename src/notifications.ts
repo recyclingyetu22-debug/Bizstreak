@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Language, translate } from './i18n';
 
 const DAILY_REMINDER_ID = 'bizstreak-daily-reminder';
 
@@ -37,14 +38,14 @@ export async function requestNotificationPermission(): Promise<boolean> {
 }
 
 /** Schedules (or replaces) the single daily reminder at the given "HH:MM". */
-export async function scheduleDailyReminder(time: string): Promise<void> {
+export async function scheduleDailyReminder(time: string, lang: Language = 'en'): Promise<void> {
   if (!notificationsAvailable) return;
   const Notifications = await loadNotifications();
   const [hour, minute] = time.split(':').map(Number);
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('reminders', {
-      name: 'Daily reminders',
+      name: translate(lang, 'rem.channel'),
       importance: Notifications.AndroidImportance.DEFAULT,
     });
   }
@@ -53,8 +54,8 @@ export async function scheduleDailyReminder(time: string): Promise<void> {
   await Notifications.scheduleNotificationAsync({
     identifier: DAILY_REMINDER_ID,
     content: {
-      title: 'Keep your streak alive 🔥',
-      body: "Take two minutes — check off today's business habits.",
+      title: translate(lang, 'rem.title'),
+      body: translate(lang, 'rem.body'),
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
