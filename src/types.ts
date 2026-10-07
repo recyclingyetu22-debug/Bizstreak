@@ -9,6 +9,11 @@ export interface Habit {
   // Missing or empty means every day, so habits saved before schedules
   // existed keep working unchanged.
   days?: number[];
+  // Optional numbers and notes per day, e.g. the day's sales. Keyed by ISO
+  // date. Only habits with trackAmount show an amount field.
+  trackAmount?: boolean;
+  unit?: string; // shown next to amounts, e.g. "$", "kg", "calls"
+  entries?: Record<string, { amount?: number; note?: string }>;
 }
 
 import type { Language } from './i18n';

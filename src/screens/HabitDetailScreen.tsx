@@ -11,6 +11,7 @@ import { useTheme } from '../ThemeContext';
 import { useT } from '../useT';
 import ContributionGrid from '../components/ContributionGrid';
 import { scheduleText } from '../schedule';
+import EntryCard from '../components/EntryCard';
 import { generateGridWeeks, getBestStreak, getCompletionRate, getCurrentStreak, todayISO } from '../streaks';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HabitDetail'>;
@@ -114,6 +115,8 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
             <Text style={styles.statLabel}>{t('det.last30')}</Text>
           </View>
         </View>
+
+        <EntryCard habit={habit} />
 
         <Text style={styles.sectionLabel}>{t('det.history')}</Text>
         <View style={styles.gridCard}>

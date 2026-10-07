@@ -155,6 +155,21 @@ const en = {
   'bk.freeLimit': (v: Vars) =>
     `The free plan holds 3 habits, so ${v.dropped} ${plural(v.dropped, 'habit was', 'habits were')} left out. Upgrade to Pro to restore them all.`,
 
+  'add.track': 'Track an amount each day',
+  'add.trackHint': "For example the day's sales. You'll see weekly totals.",
+  'add.unit': 'Unit (e.g. $, kg, calls)',
+  'ent.title': 'Daily entry',
+  'ent.today': 'Today',
+  'ent.yesterday': 'Yesterday',
+  'ent.amount': 'Amount',
+  'ent.note': 'Note (optional)',
+  'ent.save': 'Save entry',
+  'ent.saved': 'Saved ✓',
+  'ent.thisWeek': 'This week',
+  'ent.lastWeek': 'Last week',
+  'ent.avg': 'Daily average (30 days)',
+  'ent.badAmount': 'Enter a valid amount, for example 1250 or 12.50.',
+
   'rem.title': 'Keep your streak alive 🔥',
   'rem.body': "Take two minutes — check off today's business habits.",
   'rem.channel': 'Daily reminders',
@@ -352,6 +367,21 @@ const fr: Record<TKey, Entry> = {
   'bk.doneBody': (v: Vars) => `${v.n} ${plural(v.n, 'habitude restaurée', 'habitudes restaurées')}.`,
   'bk.freeLimit': (v: Vars) =>
     `La formule gratuite contient 3 habitudes, donc ${v.dropped} ${plural(v.dropped, 'habitude a été laissée', 'habitudes ont été laissées')} de côté. Passez à Pro pour tout restaurer.`,
+
+  'add.track': 'Suivre un montant chaque jour',
+  'add.trackHint': 'Par exemple les ventes du jour. Vous verrez les totaux par semaine.',
+  'add.unit': 'Unité (ex. : $, kg, appels)',
+  'ent.title': 'Entrée du jour',
+  'ent.today': "Aujourd'hui",
+  'ent.yesterday': 'Hier',
+  'ent.amount': 'Montant',
+  'ent.note': 'Note (facultatif)',
+  'ent.save': "Enregistrer l'entrée",
+  'ent.saved': 'Enregistré ✓',
+  'ent.thisWeek': 'Cette semaine',
+  'ent.lastWeek': 'Semaine dernière',
+  'ent.avg': 'Moyenne par jour (30 j)',
+  'ent.badAmount': 'Entrez un montant valide, par exemple 1250 ou 12,50.',
 
   'rem.title': 'Gardez votre série en vie 🔥',
   'rem.body': "Prenez deux minutes — cochez vos habitudes du jour.",

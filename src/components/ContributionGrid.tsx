@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { GridCell } from '../streaks';
 import { useTheme } from '../ThemeContext';
@@ -23,6 +23,7 @@ export default function ContributionGrid({
   todayDate,
 }: Props) {
   const theme = useTheme();
+  const scrollRef = useRef<ScrollView>(null);
   const content = (
     <View style={{ flexDirection: 'row', gap }}>
       {weeks.map((col, wi) => (
@@ -62,6 +63,9 @@ export default function ContributionGrid({
   if (scrollable) {
     return (
       <ScrollView
+        ref={scrollRef}
+        // Open on the newest weeks; the old ones are a swipe to the left.
+        onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 2 }}

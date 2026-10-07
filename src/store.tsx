@@ -15,7 +15,7 @@ interface StoreValue {
   reminderTime: string;
   language: Language;
   addHabit: (habit: Habit) => void;
-  updateHabit: (id: string, patch: Partial<Pick<Habit, 'name' | 'emoji' | 'color' | 'days'>>) => void;
+  updateHabit: (id: string, patch: Partial<Pick<Habit, 'name' | 'emoji' | 'color' | 'days' | 'trackAmount' | 'unit'>>) => void;
   deleteHabit: (id: string) => void;
   toggleHabitDate: (id: string, dateISO: string) => void;
   reorderHabit: (id: string, direction: -1 | 1) => void;
@@ -25,6 +25,7 @@ interface StoreValue {
   setReminder: (enabled: boolean, time: string) => void;
   setLanguage: (language: Language) => void;
   restoreData: (habits: Habit[], themeMode: ThemeMode, language: Language) => void;
+  setEntry: (id: string, dateISO: string, entry: { amount?: number; note?: string } | null) => void;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -96,6 +97,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const setThemeMode = (mode: ThemeMode) => setState((s) => ({ ...s, themeMode: mode }));
   const setLanguage = (language: Language) => setState((s) => ({ ...s, language }));
   // Replaces the habits with a restored backup; purchase status is untouched.
+  // Saves (or clears) a day's note/amount. Saving something also marks the day done.
+  const setEntry: StoreValue['setEntry'] = (id, dateISO, entry) =>
+    setState((s) => ({
+      ...s,
+      habits: s.habits.map((h) => {
+        if (h.id !== id) return h;
+        const entries = { ...(h.entries ?? {}) };
+        if (!entry || (entry.amount === undefined && !entry.note)) {
+          delete entries[dateISO];
+          return { ...h, entries: Object.keys(entries).length ? entries : undefined };
+        }
+        entries[dateISO] = entry;
+        const completions = h.completions.includes(dateISO) ? h.completions : [...h.completions, dateISO].sort();
+        return { ...h, entries, completions };
+      }),
+    }));
   const restoreData = (habits: Habit[], themeMode: ThemeMode, language: Language) =>
     setState((s) => ({ ...s, habits, themeMode, language }));
   const setReminder = (enabled: boolean, time: string) =>
@@ -123,6 +140,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         setReminder,
         setLanguage,
         restoreData,
+        setEntry,
       }}
     >
       {children}

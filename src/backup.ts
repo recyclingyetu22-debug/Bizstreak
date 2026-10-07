@@ -16,6 +16,9 @@ interface BackupHabit {
   color: string;
   createdAt: string;
   days?: number[];
+  track?: boolean;
+  unit?: string;
+  entries?: Record<string, { a?: number; n?: string }>;
   done: string[]; // dates or ranges "a..b"
 }
 
@@ -73,6 +76,18 @@ export function createBackup(state: AppState, now: Date = new Date()): string {
       color: h.color,
       createdAt: h.createdAt,
       ...(h.days && h.days.length ? { days: h.days } : {}),
+      ...(h.trackAmount ? { track: true } : {}),
+      ...(h.unit ? { unit: h.unit } : {}),
+      ...(h.entries && Object.keys(h.entries).length
+        ? {
+            entries: Object.fromEntries(
+              Object.entries(h.entries).map(([date, e]) => [
+                date,
+                { ...(e.amount !== undefined ? { a: e.amount } : {}), ...(e.note ? { n: e.note } : {}) },
+              ]),
+            ),
+          }
+        : {}),
       done: compressDates(h.completions),
     })),
   };
@@ -102,6 +117,15 @@ export function parseBackup(text: string): ParsedBackup {
         Array.isArray(h.days) && h.days.length > 0 && h.days.length < 7 && h.days.every((d: unknown) => Number.isInteger(d) && (d as number) >= 0 && (d as number) <= 6)
           ? (h.days as number[])
           : undefined;
+      const entries: Habit['entries'] = {};
+      if (h.entries && typeof h.entries === 'object') {
+        for (const [date, e] of Object.entries(h.entries as Record<string, any>)) {
+          if (!ISO.test(date) || !e || typeof e !== 'object') continue;
+          const amount = typeof e.a === 'number' && Number.isFinite(e.a) && e.a >= 0 && e.a <= 1e12 ? e.a : undefined;
+          const note = isStr(e.n) ? e.n.slice(0, 300) : undefined;
+          if (amount !== undefined || note) entries[date] = { amount, note };
+        }
+      }
       habits.push({
         id: h.id,
         name: h.name.slice(0, 120),
@@ -109,6 +133,9 @@ export function parseBackup(text: string): ParsedBackup {
         color: h.color,
         createdAt: h.createdAt,
         days,
+        trackAmount: h.track === true ? true : undefined,
+        unit: isStr(h.unit) && h.unit ? h.unit.slice(0, 12) : undefined,
+        entries: Object.keys(entries).length ? entries : undefined,
         completions: expandDates(h.done).filter((d) => ISO.test(d)),
       });
     }

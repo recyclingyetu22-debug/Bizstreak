@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation';
@@ -27,6 +27,8 @@ export default function EditHabitScreen({ route, navigation }: Props) {
   const [emoji, setEmoji] = useState(habit?.emoji ?? '✅');
   const [color, setColor] = useState(habit?.color ?? HABIT_COLORS[0]);
   const [days, setDays] = useState<number[]>(habit?.days && habit.days.length ? habit.days : ALL_DAYS);
+  const [trackAmount, setTrackAmount] = useState(Boolean(habit?.trackAmount));
+  const [unit, setUnit] = useState(habit?.unit ?? '');
 
   if (!habit) {
     return (
@@ -40,7 +42,14 @@ export default function EditHabitScreen({ route, navigation }: Props) {
 
   const handleSave = () => {
     if (!canSave) return;
-    updateHabit(habit.id, { name: name.trim(), emoji, color, days: normalizeDays(days) });
+    updateHabit(habit.id, {
+      name: name.trim(),
+      emoji,
+      color,
+      days: normalizeDays(days),
+      trackAmount: trackAmount ? true : undefined,
+      unit: trackAmount && unit.trim() ? unit.trim() : undefined,
+    });
     navigation.goBack();
   };
 
@@ -80,6 +89,27 @@ export default function EditHabitScreen({ route, navigation }: Props) {
 
         <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.repeat')}</Text>
         <DayPicker value={days} onChange={setDays} />
+
+        <View style={styles.trackRow}>
+          <Text style={styles.trackLabel}>{t('add.track')}</Text>
+          <Switch
+            value={trackAmount}
+            onValueChange={setTrackAmount}
+            trackColor={{ false: theme.border, true: theme.accent }}
+            thumbColor="#FFFFFF"
+          />
+        </View>
+        <Text style={styles.trackHint}>{t('add.trackHint')}</Text>
+        {trackAmount && (
+          <TextInput
+            value={unit}
+            onChangeText={setUnit}
+            maxLength={12}
+            placeholder={t('add.unit')}
+            placeholderTextColor={theme.textFaint}
+            style={[styles.nameInput, { marginTop: 10 }]}
+          />
+        )}
 
         <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.color')}</Text>
         <View style={styles.colorRow}>
@@ -152,6 +182,9 @@ function makeStyles(theme: Theme) {
       fontSize: 16,
       color: theme.text,
     },
+    trackRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 24 },
+    trackLabel: { color: theme.text, fontSize: 15, flex: 1, paddingRight: 12 },
+    trackHint: { color: theme.textFaint, fontSize: 12, marginTop: 4 },
     colorRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
     colorDot: { width: 34, height: 34, borderRadius: 17 },
     colorDotActive: { borderWidth: 3, borderColor: theme.text },
