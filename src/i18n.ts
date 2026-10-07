@@ -220,6 +220,16 @@ const en = {
   'pack.farm.h2': 'Record harvest or production',
   'pack.farm.h3': 'Check feed and supplies',
 
+  'ms.title': (v: Vars) => `${v.n}-day streak!`,
+  'ms.body7': 'One full week in a row. This is how a real habit starts.',
+  'ms.body30': 'A whole month without breaking the chain. Your business is feeling it.',
+  'ms.body100': '100 days. Very few people ever get here. You are unstoppable.',
+  'ms.share': 'Share my milestone',
+  'ms.shareTitle': 'My BizStreak milestone',
+  'ms.close': 'Keep going',
+  'ms.badges': 'Milestones',
+  'ms.badge': (v: Vars) => `${v.n} days`,
+
   'rem.title': 'Keep your streak alive 🔥',
   'rem.body': "Take two minutes — check off today's business habits.",
   'rem.channel': 'Daily reminders',
@@ -482,6 +492,16 @@ const fr: Record<TKey, Entry> = {
   'pack.farm.h1': 'Arroser et surveiller les cultures ou les animaux',
   'pack.farm.h2': 'Enregistrer la récolte ou la production',
   'pack.farm.h3': "Vérifier l'alimentation et les fournitures",
+
+  'ms.title': (v: Vars) => `Série de ${v.n} jours !`,
+  'ms.body7': 'Une semaine complète sans interruption. Voilà comment naît une vraie habitude.',
+  'ms.body30': 'Un mois entier sans casser la chaîne. Votre activité en profite.',
+  'ms.body100': '100 jours. Très peu de gens y arrivent. Vous êtes inarrêtable.',
+  'ms.share': 'Partager mon étape',
+  'ms.shareTitle': 'Mon étape BizStreak',
+  'ms.close': 'Continuer',
+  'ms.badges': 'Étapes',
+  'ms.badge': (v: Vars) => `${v.n} jours`,
 
   'rem.title': 'Gardez votre série en vie 🔥',
   'rem.body': "Prenez deux minutes — cochez vos habitudes du jour.",

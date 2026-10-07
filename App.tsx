@@ -16,6 +16,7 @@ import BackupScreen from './src/screens/BackupScreen';
 import ReportScreen from './src/screens/ReportScreen';
 import PacksScreen from './src/screens/PacksScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
+import MilestoneModal from './src/components/MilestoneModal';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -48,6 +49,7 @@ function RootNavigator() {
         <Stack.Screen name="Report" component={ReportScreen} />
         <Stack.Screen name="Packs" component={PacksScreen} />
       </Stack.Navigator>
+      <MilestoneModal />
     </NavigationContainer>
   );
 }

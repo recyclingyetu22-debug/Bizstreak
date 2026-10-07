@@ -2,10 +2,20 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { AppState, Habit, ThemeMode } from './types';
 import { Language, detectLanguage } from './i18n';
 import { loadState, saveState } from './storage';
-import { toggleCompletion } from './streaks';
+import { getCurrentStreak, toggleCompletion } from './streaks';
+import { Milestone, milestoneCrossed } from './milestones';
 import { initPurchases, hasProEntitlement } from './purchases';
 
+export interface Celebration {
+  habitId: string;
+  name: string;
+  emoji: string;
+  milestone: Milestone;
+}
+
 interface StoreValue {
+  celebration: Celebration | null;
+  dismissCelebration: () => void;
   ready: boolean;
   habits: Habit[];
   isPro: boolean;
@@ -44,6 +54,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>(defaultState);
   const [ready, setReady] = useState(false);
   const hydrated = useRef(false);
+  const [celebration, setCelebration] = useState<Celebration | null>(null);
+  // Each habit's streak at the last look; null = take a fresh baseline without celebrating
+  // (first load, or right after a restore).
+  const lastStreaks = useRef<Record<string, number> | null>(null);
+  const celebrated = useRef(new Set<string>());
 
   useEffect(() => {
     loadState().then(async (s) => {
@@ -64,6 +79,27 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     if (!hydrated.current) return;
     saveState(state);
   }, [state]);
+
+  // A habit whose streak just reached 7, 30 or 100 days gets a celebration.
+  useEffect(() => {
+    if (!hydrated.current) return;
+    const now: Record<string, number> = {};
+    state.habits.forEach((h) => {
+      now[h.id] = getCurrentStreak(h);
+    });
+    const before = lastStreaks.current;
+    lastStreaks.current = now;
+    if (!before) return;
+    for (const h of state.habits) {
+      const m = milestoneCrossed(before[h.id] ?? now[h.id], now[h.id]);
+      const key = `${h.id}:${m}`;
+      if (m && !celebrated.current.has(key)) {
+        celebrated.current.add(key);
+        setCelebration({ habitId: h.id, name: h.name, emoji: h.emoji, milestone: m });
+        break;
+      }
+    }
+  }, [state.habits]);
 
   const addHabit = (habit: Habit) => setState((s) => ({ ...s, habits: [...s.habits, habit] }));
 
@@ -113,8 +149,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         return { ...h, entries, completions };
       }),
     }));
-  const restoreData = (habits: Habit[], themeMode: ThemeMode, language: Language) =>
+  const restoreData = (habits: Habit[], themeMode: ThemeMode, language: Language) => {
+    lastStreaks.current = null; // a restored streak is not a new achievement
     setState((s) => ({ ...s, habits, themeMode, language }));
+  };
   const setReminder = (enabled: boolean, time: string) =>
     setState((s) => ({ ...s, reminderEnabled: enabled, reminderTime: time }));
 
@@ -122,6 +160,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     <StoreContext.Provider
       value={{
         ready,
+        celebration,
+        dismissCelebration: () => setCelebration(null),
         habits: state.habits,
         isPro: state.isPro,
         onboarded: state.onboarded,

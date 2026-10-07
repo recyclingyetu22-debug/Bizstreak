@@ -11,6 +11,7 @@ import { useTheme } from '../ThemeContext';
 import { useT } from '../useT';
 import ContributionGrid from '../components/ContributionGrid';
 import { scheduleText } from '../schedule';
+import { MILESTONES, earnedMilestones } from '../milestones';
 import EntryCard from '../components/EntryCard';
 import { generateGridWeeks, getBestStreak, getCompletionRate, getCurrentStreak, todayISO } from '../streaks';
 
@@ -130,6 +131,19 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
             onCellPress={(date) => toggleHabitDate(habit.id, date)}
           />
         </View>
+        <Text style={styles.msLabel}>{t('ms.badges')}</Text>
+        <View style={styles.badgeRow}>
+          {MILESTONES.map((m) => {
+            const earned = earnedMilestones(getBestStreak(habit)).includes(m);
+            return (
+              <View key={m} style={[styles.badge, earned && styles.badgeOn]}>
+                <Text style={styles.badgeEmoji}>{m >= 100 ? '👑' : m >= 30 ? '🏆' : '🔥'}</Text>
+                <Text style={[styles.badgeText, earned && styles.badgeTextOn]}>{t('ms.badge', { n: m })}</Text>
+              </View>
+            );
+          })}
+        </View>
+
         <Text style={styles.hint}>{t('det.hint')}</Text>
         <Text style={styles.hint}>{t('det.schedule', { days: scheduleText(habit, t) })}</Text>
         {habit.reminderTime && <Text style={styles.hint}>🔔 {t('det.reminder', { time: habit.reminderTime })}</Text>}
@@ -190,6 +204,13 @@ function makeStyles(theme: Theme) {
     statLabel: { color: theme.textMuted, fontSize: 11, marginTop: 4, textAlign: 'center' },
     sectionLabel: { color: theme.textMuted, fontSize: 13, fontWeight: '600', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
     gridCard: { backgroundColor: theme.card, borderRadius: 14, borderWidth: 1, borderColor: theme.border, padding: 14 },
+    msLabel: { color: theme.textMuted, fontSize: 13, fontWeight: '600', marginTop: 18, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
+    badgeRow: { flexDirection: 'row', gap: 10 },
+    badge: { flex: 1, alignItems: 'center', paddingVertical: 12, borderRadius: 14, borderWidth: 1, borderColor: theme.border, backgroundColor: theme.card, opacity: 0.4 },
+    badgeOn: { opacity: 1, borderColor: theme.accent },
+    badgeEmoji: { fontSize: 24 },
+    badgeText: { color: theme.textMuted, fontSize: 12, fontWeight: '700', marginTop: 4 },
+    badgeTextOn: { color: theme.accent },
     hint: { color: theme.textFaint, fontSize: 12, marginTop: 10, textAlign: 'center' },
   });
 }

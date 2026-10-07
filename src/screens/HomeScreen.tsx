@@ -52,41 +52,41 @@ export default function HomeScreen({ navigation }: Props) {
     <View style={styles.root}>
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <View style={{ flex: 1 }}>
+        <View style={styles.topRow}>
           <BackButton onPress={() => navigation.navigate('Onboarding')} />
-          <Text style={styles.title}>BizStreak</Text>
-          <Text style={styles.subtitle}>{progressMessage()}</Text>
-          {habits.length > 0 && (
-            <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%` }]} />
-            </View>
-          )}
+          <View style={styles.headerActions}>
+            {!editMode && (
+              <Pressable onPress={handleAddPress} hitSlop={10} style={styles.editToggle}>
+                <Text style={styles.editToggleText}>{t('home.add')}</Text>
+              </Pressable>
+            )}
+            {habits.length > 0 && (
+              <Pressable onPress={() => setEditMode((v) => !v)} hitSlop={10} style={styles.editToggle}>
+                <Text style={styles.editToggleText}>{editMode ? t('home.done') : t('home.edit')}</Text>
+              </Pressable>
+            )}
+            {habits.length > 0 && (
+              <Pressable
+                onPress={() => navigation.navigate('Report')}
+                hitSlop={10}
+                style={styles.settingsBtn}
+                accessibilityLabel={t('rep.title')}
+              >
+                <Text style={styles.settingsIcon}>📊</Text>
+              </Pressable>
+            )}
+            <Pressable onPress={() => navigation.navigate('Settings')} hitSlop={10} style={styles.settingsBtn}>
+              <Text style={styles.settingsIcon}>⚙️</Text>
+            </Pressable>
+          </View>
         </View>
-        <View style={styles.headerActions}>
-          {!editMode && (
-            <Pressable onPress={handleAddPress} hitSlop={10} style={styles.editToggle}>
-              <Text style={styles.editToggleText}>{t('home.add')}</Text>
-            </Pressable>
-          )}
-          {habits.length > 0 && (
-            <Pressable onPress={() => setEditMode((v) => !v)} hitSlop={10} style={styles.editToggle}>
-              <Text style={styles.editToggleText}>{editMode ? t('home.done') : t('home.edit')}</Text>
-            </Pressable>
-          )}
-          {habits.length > 0 && (
-            <Pressable
-              onPress={() => navigation.navigate('Report')}
-              hitSlop={10}
-              style={styles.settingsBtn}
-              accessibilityLabel={t('rep.title')}
-            >
-              <Text style={styles.settingsIcon}>📊</Text>
-            </Pressable>
-          )}
-          <Pressable onPress={() => navigation.navigate('Settings')} hitSlop={10} style={styles.settingsBtn}>
-            <Text style={styles.settingsIcon}>⚙️</Text>
-          </Pressable>
-        </View>
+        <Text style={styles.title}>BizStreak</Text>
+        <Text style={styles.subtitle}>{progressMessage()}</Text>
+        {habits.length > 0 && (
+          <View style={styles.progressTrack}>
+            <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%` }]} />
+          </View>
+        )}
       </View>
 
       {smartTip && (
@@ -156,13 +156,11 @@ function makeStyles(theme: Theme) {
     root: { flex: 1, backgroundColor: theme.bg },
     safe: { flex: 1, backgroundColor: theme.bg },
     header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
       paddingHorizontal: 20,
       paddingTop: 12,
       paddingBottom: 4,
     },
+    topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     title: { color: theme.text, fontSize: 26, fontWeight: '800' },
     subtitle: { color: theme.textMuted, fontSize: 13, marginTop: 4 },
     progressTrack: {
@@ -174,7 +172,7 @@ function makeStyles(theme: Theme) {
       maxWidth: 220,
     },
     progressFill: { height: 6, borderRadius: 3, backgroundColor: theme.accent },
-    headerActions: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingTop: 2 },
+    headerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
     editToggle: { paddingVertical: 4, paddingHorizontal: 4 },
     editToggleText: { color: theme.accent, fontSize: 14, fontWeight: '700' },
     settingsBtn: { padding: 6 },
