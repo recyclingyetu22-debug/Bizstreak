@@ -115,7 +115,7 @@ const en = {
   'set.support': 'Contact support',
   'set.aboutTitle': 'About BizStreak',
   'set.aboutBody':
-    'A simple streak tracker for the daily habits that keep a small business disciplined — checking stock, following up on unpaid invoices, recording sales, and staying on top of leads. All data stays on this device.',
+    'BizStreak is a simple habit and streak tracker built for small business owners. Pick the daily jobs that keep your business running — checking stock, recording sales, following up on unpaid invoices — and tick them off to build a streak.\n\nChoose which days each habit counts, set a reminder time for each one, add notes or numbers such as daily sales, and get a weekly report plus celebrations at 7, 30 and 100 days. Back up your habits and restore them on a new phone.\n\nEverything stays on this phone. No account, no sign-up.',
   'set.version': (v: Vars) => `Version ${v.v}`,
   'set.restoredTitle': 'Restored',
   'set.restoredBody': 'Your Pro purchase has been restored.',
@@ -387,7 +387,7 @@ const fr: Record<TKey, Entry> = {
   'set.support': 'Contacter le support',
   'set.aboutTitle': 'À propos de BizStreak',
   'set.aboutBody':
-    "Un suivi de séries simple pour les habitudes quotidiennes qui gardent une petite entreprise disciplinée — vérifier le stock, relancer les factures impayées, enregistrer les ventes et suivre les prospects. Toutes les données restent sur cet appareil.",
+    "BizStreak est un suivi d'habitudes et de séries simple, conçu pour les petits entrepreneurs. Choisissez les tâches quotidiennes qui font tourner votre activité — vérifier le stock, enregistrer les ventes, relancer les factures impayées — et cochez-les pour construire une série.\n\nChoisissez les jours où chaque habitude compte, fixez une heure de rappel pour chacune, ajoutez des notes ou des chiffres comme les ventes du jour, et recevez un bilan hebdomadaire ainsi que des célébrations à 7, 30 et 100 jours. Sauvegardez vos habitudes et retrouvez-les sur un nouveau téléphone.\n\nTout reste sur ce téléphone. Aucun compte, aucune inscription.",
   'set.version': (v: Vars) => `Version ${v.v}`,
   'set.restoredTitle': 'Achat restauré',
   'set.restoredBody': 'Votre achat Pro a été restauré.',
