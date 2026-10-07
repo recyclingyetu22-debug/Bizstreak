@@ -3,6 +3,7 @@ import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
 import { useT } from '../useT';
+import { numberSeparators } from '../i18n';
 import { useStore } from '../store';
 import { Habit } from '../types';
 import { addDays, todayISO } from '../streaks';
@@ -23,7 +24,7 @@ export default function EntryCard({ habit }: { habit: Habit }) {
   const [saved, setSaved] = useState(false);
 
   const stored = habit.entries?.[date];
-  const decimal = language === 'fr' ? ',' : '.';
+  const decimal = numberSeparators(language).decimal;
   const [amountText, setAmountText] = useState('');
   const [noteText, setNoteText] = useState('');
 

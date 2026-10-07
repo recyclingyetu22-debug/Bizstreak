@@ -9,7 +9,7 @@ import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
 import { useT } from '../useT';
 import TimePicker from '../components/TimePicker';
-import { Language, purchaseErrorKey } from '../i18n';
+import { LANGUAGES, Language, purchaseErrorKey } from '../i18n';
 import { ThemeMode } from '../types';
 import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder, notificationsAvailable, syncHabitReminders } from '../notifications';
 import { restorePurchases, isPurchasesUsable, PRO_ENTITLEMENT_ID } from '../purchases';
@@ -149,16 +149,14 @@ export default function SettingsScreen({ navigation }: Props) {
 
         <Text style={styles.sectionTitle}>{t('set.language')}</Text>
         <View style={styles.card}>
-          <View style={styles.themeRow}>
-            {(['en', 'fr'] as Language[]).map((l) => (
+          <View style={styles.langGrid}>
+            {LANGUAGES.map((l) => (
               <Pressable
-                key={l}
-                onPress={() => handleLanguage(l)}
-                style={[styles.themeOption, language === l && styles.themeOptionActive]}
+                key={l.code}
+                onPress={() => handleLanguage(l.code)}
+                style={[styles.themeOption, styles.langOption, language === l.code && styles.themeOptionActive]}
               >
-                <Text style={[styles.themeLabel, language === l && styles.themeLabelActive]}>
-                  {l === 'en' ? 'English' : 'Français'}
-                </Text>
+                <Text style={[styles.themeLabel, language === l.code && styles.themeLabelActive]}>{l.name}</Text>
               </Pressable>
             ))}
           </View>
@@ -258,6 +256,8 @@ function makeStyles(theme: Theme) {
     timeChipText: { color: theme.text, fontSize: 13, fontWeight: '600' },
     timeChipTextActive: { color: theme.accentOn },
     themeRow: { flexDirection: 'row', gap: 12 },
+    langGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+    langOption: { flexGrow: 1, flexBasis: '30%' },
     themeOption: {
       flex: 1,
       alignItems: 'center',

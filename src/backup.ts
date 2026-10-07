@@ -1,6 +1,7 @@
 import { AppState, Habit, FREE_HABIT_LIMIT } from './types';
 import { addDays } from './streaks';
 import { parseTime } from './reminderPlan';
+import { isLanguage } from './i18n';
 
 // A backup is plain text (JSON) the user can send to themselves. Completion
 // dates are stored as ranges ("2026-01-01..2026-03-31") so a long unbroken
@@ -147,7 +148,7 @@ export function parseBackup(text: string): ParsedBackup {
       ok: true,
       habits,
       themeMode: raw.themeMode === 'light' ? 'light' : 'dark',
-      language: raw.language === 'fr' ? 'fr' : 'en',
+      language: isLanguage(raw.language) ? raw.language : 'en',
     };
   } catch {
     return { ok: false };

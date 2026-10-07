@@ -1,15 +1,40 @@
-// All user-facing text, in English and French. `fr` is typed against `en`, so
-// the compiler fails if a key is added in one language and forgotten in the other.
+// All user-facing text. English is the source; every other language is typed
+// against it, so the compiler fails if a key is added in one language and
+// forgotten in another. Translations live in src/lang/.
 
-export type Language = 'en' | 'fr';
-type Vars = Record<string, string | number>;
-type Entry = string | ((v: Vars) => string);
+import { plural } from './lang/shared';
+import { es } from './lang/es';
+import { sw } from './lang/sw';
+import { hi } from './lang/hi';
+import { zh } from './lang/zh';
 
-const plural = (n: unknown, one: string, many: string) => (Number(n) > 1 ? many : one);
+export type Language = 'en' | 'fr' | 'es' | 'sw' | 'hi' | 'zh';
+export type Vars = Record<string, string | number>;
+export type Entry = string | ((v: Vars) => string);
+
+/** Every language, each named in its own language. */
+export const LANGUAGES: { code: Language; name: string }[] = [
+  { code: 'en', name: 'English' },
+  { code: 'fr', name: 'Français' },
+  { code: 'es', name: 'Español' },
+  { code: 'sw', name: 'Kiswahili' },
+  { code: 'hi', name: 'हिन्दी' },
+  { code: 'zh', name: '中文' },
+];
+
+export const isLanguage = (v: unknown): v is Language => LANGUAGES.some((l) => l.code === v);
+
+/** Thousands and decimal separators used when showing amounts. */
+export function numberSeparators(lang: Language): { group: string; decimal: string } {
+  if (lang === 'fr') return { group: ' ', decimal: ',' };
+  if (lang === 'es') return { group: '.', decimal: ',' };
+  return { group: ',', decimal: '.' };
+}
 
 const en = {
   back: '‹ Back',
   cancel: 'Cancel',
+  'lang.title': 'Choose your language',
 
   'onb.skip': 'Skip',
   'onb.next': 'Next',
@@ -280,6 +305,7 @@ export type TKey = keyof typeof en;
 const fr: Record<TKey, Entry> = {
   back: '‹ Retour',
   cancel: 'Annuler',
+  'lang.title': 'Choisissez votre langue',
 
   'onb.skip': 'Passer',
   'onb.next': 'Suivant',
@@ -556,17 +582,20 @@ export function purchaseErrorKey(code?: string): TKey | null {
   return null;
 }
 
+const TABLES: Record<Language, Record<TKey, Entry>> = { en: en as Record<TKey, Entry>, fr, es, sw, hi, zh };
+
 export function translate(lang: Language, key: TKey, vars: Vars = {}): string {
-  const entry: Entry = (lang === 'fr' ? fr[key] : (en[key] as Entry)) ?? (en[key] as Entry) ?? key;
+  const entry: Entry = TABLES[lang]?.[key] ?? (en[key] as Entry) ?? key;
   return typeof entry === 'function' ? entry(vars) : entry;
 }
 
-/** English unless the phone itself is set to French. The user can still
- * change it in Settings. */
+/** The phone's own language if we have it, otherwise English. The user can
+ * still change it in Settings. */
 export function detectLanguage(): Language {
   try {
     const locale = Intl.DateTimeFormat().resolvedOptions().locale ?? '';
-    return locale.toLowerCase().startsWith('fr') ? 'fr' : 'en';
+    const code = locale.toLowerCase().slice(0, 2);
+    return isLanguage(code) ? code : 'en';
   } catch {
     return 'en';
   }

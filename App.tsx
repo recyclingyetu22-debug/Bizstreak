@@ -16,6 +16,7 @@ import BackupScreen from './src/screens/BackupScreen';
 import ReportScreen from './src/screens/ReportScreen';
 import PacksScreen from './src/screens/PacksScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
+import LanguageScreen from './src/screens/LanguageScreen';
 import MilestoneModal from './src/components/MilestoneModal';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,7 +38,8 @@ function RootNavigator() {
   return (
     <NavigationContainer theme={navTheme}>
       <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={onboarded ? 'Home' : 'Onboarding'}>
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={onboarded ? 'Home' : 'Language'}>
+        <Stack.Screen name="Language" component={LanguageScreen} />
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="AddHabit" component={AddHabitScreen} options={{ presentation: 'modal' }} />

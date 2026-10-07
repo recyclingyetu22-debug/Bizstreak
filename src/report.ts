@@ -90,13 +90,18 @@ export function buildReport(habits: Habit[], today: string): WeeklyReport {
 const MONTHS: Record<Language, string[]> = {
   en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   fr: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
+  es: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
+  sw: ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ago', 'Sep', 'Okt', 'Nov', 'Des'],
+  hi: ['जन॰', 'फ़र॰', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुल॰', 'अग॰', 'सित॰', 'अक्टू॰', 'नव॰', 'दिस॰'],
+  zh: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
 };
 
 /** "Oct 5" (en) / "5 oct." (fr) */
 export function formatDay(iso: string, lang: Language): string {
   const [, m, d] = iso.split('-').map(Number);
   const month = MONTHS[lang][m - 1];
-  return lang === 'fr' ? `${d} ${month}` : `${month} ${d}`;
+  if (lang === 'zh') return `${month}${d}日`;
+  return lang === 'en' ? `${month} ${d}` : `${d} ${month}`;
 }
 
 export function formatRange(from: string, to: string, lang: Language): string {

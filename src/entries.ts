@@ -1,5 +1,5 @@
 import { Habit } from './types';
-import type { Language } from './i18n';
+import { Language, numberSeparators } from './i18n';
 import { addDays } from './streaks';
 
 function dowOfISO(dateISO: string): number {
@@ -94,6 +94,7 @@ export function parseAmount(text: string): number | undefined {
 export function formatAmount(n: number, lang: Language): string {
   const fixed = (Math.round(n * 100) / 100).toFixed(2).replace(/\.?0+$/, '');
   const [intPart, frac] = fixed.split('.');
-  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, lang === 'fr' ? ' ' : ',');
-  return frac ? grouped + (lang === 'fr' ? ',' : '.') + frac : grouped;
+  const { group, decimal } = numberSeparators(lang);
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, group);
+  return frac ? grouped + decimal + frac : grouped;
 }
