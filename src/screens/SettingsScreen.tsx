@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Switch, Linking } from 'react-native';
 import Constants from 'expo-constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import { useStore } from '../store';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
 import { useT } from '../useT';
+import TimePicker from '../components/TimePicker';
 import { Language, purchaseErrorKey } from '../i18n';
 import { ThemeMode } from '../types';
 import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder, notificationsAvailable } from '../notifications';
@@ -15,8 +16,6 @@ import { restorePurchases, isPurchasesUsable, PRO_ENTITLEMENT_ID } from '../purc
 import { PRIVACY_URL, TERMS_URL, DELETE_DATA_URL, SUPPORT_EMAIL } from '../links';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
-
-const REMINDER_TIMES = ['07:00', '09:00', '12:00', '18:00', '20:00'];
 
 export default function SettingsScreen({ navigation }: Props) {
   const { isPro, habits, themeMode, setThemeMode, reminderEnabled, reminderTime, setReminder, setPro, language, setLanguage } = useStore();
@@ -64,11 +63,15 @@ export default function SettingsScreen({ navigation }: Props) {
     setReminder(true, reminderTime);
   };
 
-  const handleTimePick = async (time: string) => {
+  // Re-scheduling waits until the user stops tapping the arrows.
+  const rescheduleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleTimePick = (time: string) => {
     setReminder(reminderEnabled, time);
-    if (reminderEnabled) {
-      await scheduleDailyReminder(time, language);
-    }
+    if (!reminderEnabled) return;
+    if (rescheduleTimer.current) clearTimeout(rescheduleTimer.current);
+    rescheduleTimer.current = setTimeout(() => {
+      scheduleDailyReminder(time, language);
+    }, 600);
   };
 
   const handleLanguage = async (next: Language) => {
@@ -118,16 +121,9 @@ export default function SettingsScreen({ navigation }: Props) {
             />
           </View>
           {reminderEnabled && (
-            <View style={styles.timeRow}>
-              {REMINDER_TIMES.map((t) => (
-                <Pressable
-                  key={t}
-                  onPress={() => handleTimePick(t)}
-                  style={[styles.timeChip, reminderTime === t && styles.timeChipActive]}
-                >
-                  <Text style={[styles.timeChipText, reminderTime === t && styles.timeChipTextActive]}>{t}</Text>
-                </Pressable>
-              ))}
+            <View style={{ marginTop: 16 }}>
+              <Text style={styles.timeLabel}>{t('set.time')}</Text>
+              <TimePicker value={reminderTime} onChange={handleTimePick} />
             </View>
           )}
         </View>
@@ -243,6 +239,7 @@ function makeStyles(theme: Theme) {
     },
     row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     rowText: { color: theme.text, fontSize: 14 },
+    timeLabel: { color: theme.textMuted, fontSize: 12, marginBottom: 6, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5 },
     timeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
     timeChip: {
       borderWidth: 1,

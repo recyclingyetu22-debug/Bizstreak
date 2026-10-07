@@ -48,6 +48,7 @@ export default function ContributionGrid({
                       : theme.gridEmpty,
                     borderColor: isToday ? color : 'transparent',
                     borderWidth: isToday ? 2 : 0,
+                    opacity: !cell.future && !cell.completed && !cell.scheduled ? 0.3 : 1,
                   },
                 ]}
               />

@@ -9,7 +9,7 @@ import { useTheme } from '../ThemeContext';
 import BackButton from '../components/BackButton';
 import HabitCard from '../components/HabitCard';
 import { FREE_HABIT_LIMIT } from '../types';
-import { todayISO } from '../streaks';
+import { isScheduled, todayISO } from '../streaks';
 import { getSmartTip } from '../insights';
 import { useT } from '../useT';
 
@@ -23,8 +23,9 @@ export default function HomeScreen({ navigation }: Props) {
   const [editMode, setEditMode] = useState(false);
   const insets = useSafeAreaInsets();
   const today = todayISO();
-  const doneTodayCount = habits.filter((h) => h.completions.includes(today)).length;
-  const progress = habits.length === 0 ? 0 : doneTodayCount / habits.length;
+  const dueToday = habits.filter((h) => isScheduled(h, today));
+  const doneTodayCount = dueToday.filter((h) => h.completions.includes(today)).length;
+  const progress = dueToday.length === 0 ? 0 : doneTodayCount / dueToday.length;
   // Recomputed only when the habit list identity changes (a completion
   // toggle replaces the array), not on every render — cheap either way at
   // realistic habit counts, but no reason to redo the weekday scan for
@@ -41,9 +42,10 @@ export default function HomeScreen({ navigation }: Props) {
 
   const progressMessage = () => {
     if (habits.length === 0) return t('home.sub');
-    if (doneTodayCount === habits.length) return t('home.allDone');
-    if (doneTodayCount === 0) return t('home.waiting', { n: habits.length });
-    return t('home.progress', { done: doneTodayCount, total: habits.length });
+    if (dueToday.length === 0) return t('home.rest');
+    if (doneTodayCount === dueToday.length) return t('home.allDone');
+    if (doneTodayCount === 0) return t('home.waiting', { n: dueToday.length });
+    return t('home.progress', { done: doneTodayCount, total: dueToday.length });
   };
 
   return (

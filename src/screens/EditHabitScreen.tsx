@@ -9,6 +9,8 @@ import { useTheme } from '../ThemeContext';
 import { useT } from '../useT';
 import BackButton from '../components/BackButton';
 import EmojiPicker from '../components/EmojiPicker';
+import DayPicker from '../components/DayPicker';
+import { ALL_DAYS, normalizeDays } from '../schedule';
 import { HABIT_COLORS } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EditHabit'>;
@@ -24,6 +26,7 @@ export default function EditHabitScreen({ route, navigation }: Props) {
   const [name, setName] = useState(habit?.name ?? '');
   const [emoji, setEmoji] = useState(habit?.emoji ?? '✅');
   const [color, setColor] = useState(habit?.color ?? HABIT_COLORS[0]);
+  const [days, setDays] = useState<number[]>(habit?.days && habit.days.length ? habit.days : ALL_DAYS);
 
   if (!habit) {
     return (
@@ -37,7 +40,7 @@ export default function EditHabitScreen({ route, navigation }: Props) {
 
   const handleSave = () => {
     if (!canSave) return;
-    updateHabit(habit.id, { name: name.trim(), emoji, color });
+    updateHabit(habit.id, { name: name.trim(), emoji, color, days: normalizeDays(days) });
     navigation.goBack();
   };
 
@@ -74,6 +77,9 @@ export default function EditHabitScreen({ route, navigation }: Props) {
 
         <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.emoji')}</Text>
         <EmojiPicker value={emoji} onChange={setEmoji} />
+
+        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.repeat')}</Text>
+        <DayPicker value={days} onChange={setDays} />
 
         <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.color')}</Text>
         <View style={styles.colorRow}>

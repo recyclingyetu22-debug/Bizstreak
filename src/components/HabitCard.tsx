@@ -6,6 +6,8 @@ import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
 import { generateGridWeeks, getCurrentStreak, todayISO } from '../streaks';
 import ContributionGrid from './ContributionGrid';
+import { useT } from '../useT';
+import { isEveryDay, scheduleText } from '../schedule';
 
 interface Props {
   habit: Habit;
@@ -29,6 +31,7 @@ export default function HabitCard({
   canMoveDown,
 }: Props) {
   const theme = useTheme();
+  const t = useT();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const today = todayISO();
   const doneToday = habit.completions.includes(today);
@@ -45,9 +48,12 @@ export default function HabitCard({
       <View style={styles.topRow}>
         <View style={styles.titleWrap}>
           <Text style={styles.emoji}>{habit.emoji}</Text>
-          <Text style={styles.name} numberOfLines={1}>
-            {habit.name}
-          </Text>
+          <View style={{ flexShrink: 1 }}>
+            <Text style={styles.name} numberOfLines={1}>
+              {habit.name}
+            </Text>
+            {!isEveryDay(habit) && <Text style={styles.sched}>{scheduleText(habit, t)}</Text>}
+          </View>
         </View>
         <View style={styles.rightWrap}>
           {editMode ? (
@@ -100,6 +106,7 @@ function makeStyles(theme: Theme) {
     topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
     titleWrap: { flexDirection: 'row', alignItems: 'center', flexShrink: 1, gap: 8 },
     emoji: { fontSize: 20 },
+    sched: { color: theme.textFaint, fontSize: 11, marginTop: 1 },
     name: { color: theme.text, fontSize: 16, fontWeight: '600', flexShrink: 1 },
     rightWrap: { flexDirection: 'row', alignItems: 'center', gap: 10 },
     streak: { color: theme.gold, fontSize: 13, fontWeight: '600' },

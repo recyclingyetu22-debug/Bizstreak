@@ -1,5 +1,5 @@
 import { Habit } from './types';
-import { addDays, todayISO } from './streaks';
+import { addDays, isScheduled, todayISO } from './streaks';
 import { Language, translate } from './i18n';
 
 // A weekday tip needs at least this many occurrences of that weekday (summed
@@ -43,9 +43,11 @@ export function getWeekdayStats(habits: Habit[]): WeekdayStat[] {
     // far more than this feature needs to find a pattern.
     let guard = 0;
     while (cursor <= yesterday && guard < 730) {
-      const dow = dowOfISO(cursor);
-      stats[dow].total++;
-      if (completed.has(cursor)) stats[dow].completed++;
+      if (isScheduled(habit, cursor)) {
+        const dow = dowOfISO(cursor);
+        stats[dow].total++;
+        if (completed.has(cursor)) stats[dow].completed++;
+      }
       cursor = addDays(cursor, 1);
       guard++;
     }

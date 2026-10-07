@@ -10,6 +10,7 @@ import { Theme } from '../theme';
 import { useTheme } from '../ThemeContext';
 import { useT } from '../useT';
 import ContributionGrid from '../components/ContributionGrid';
+import { scheduleText } from '../schedule';
 import { generateGridWeeks, getBestStreak, getCompletionRate, getCurrentStreak, todayISO } from '../streaks';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HabitDetail'>;
@@ -127,6 +128,7 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
           />
         </View>
         <Text style={styles.hint}>{t('det.hint')}</Text>
+        <Text style={styles.hint}>{t('det.schedule', { days: scheduleText(habit, t) })}</Text>
       </ScrollView>
     </SafeAreaView>
   );
