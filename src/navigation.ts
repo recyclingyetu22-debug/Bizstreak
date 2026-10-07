@@ -8,4 +8,5 @@ export type RootStackParamList = {
   Settings: undefined;
   Backup: undefined;
   Report: undefined;
+  Packs: undefined;
 };

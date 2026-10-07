@@ -106,6 +106,9 @@ export default function HomeScreen({ navigation }: Props) {
           <Pressable onPress={handleAddPress} style={styles.emptyBtn}>
             <Text style={styles.emptyBtnText}>{t('home.emptyBtn')}</Text>
           </Pressable>
+          <Pressable onPress={() => navigation.navigate('Packs')} style={styles.packBtn}>
+            <Text style={styles.packBtnText}>{t('packs.open')}</Text>
+          </Pressable>
         </View>
       ) : (
         <FlatList
@@ -195,6 +198,8 @@ function makeStyles(theme: Theme) {
     emptyTitle: { color: theme.text, fontSize: 18, fontWeight: '700', marginBottom: 8 },
     emptyBody: { color: theme.textMuted, fontSize: 14, textAlign: 'center', lineHeight: 20 },
     emptyBtn: { marginTop: 24, backgroundColor: theme.accent, borderRadius: 14, paddingVertical: 14, paddingHorizontal: 26 },
+    packBtn: { marginTop: 14, paddingVertical: 10, paddingHorizontal: 10 },
+    packBtnText: { color: theme.accent, fontSize: 14, fontWeight: '700', textAlign: 'center' },
     emptyBtnText: { color: theme.accentOn, fontSize: 15, fontWeight: '800' },
     fab: {
       position: 'absolute',

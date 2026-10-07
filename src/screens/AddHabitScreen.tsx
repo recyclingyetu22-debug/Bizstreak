@@ -102,6 +102,10 @@ export default function AddHabitScreen({ navigation }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
+        <Pressable onPress={() => navigation.navigate('Packs')} style={styles.packLink}>
+          <Text style={styles.packLinkText}>{t('packs.open')}</Text>
+        </Pressable>
+
         <Text style={styles.sectionLabel}>{t('add.quick')}</Text>
         <View style={styles.templateGrid}>
           {HABIT_TEMPLATES.map((tp) => (
@@ -221,6 +225,8 @@ function makeStyles(theme: Theme) {
     cancel: { color: theme.textMuted, fontSize: 15 },
     save: { color: theme.accent, fontSize: 15, fontWeight: '700' },
     saveDisabled: { color: theme.textFaint },
+    packLink: { paddingVertical: 12, marginBottom: 10 },
+    packLinkText: { color: theme.accent, fontSize: 14, fontWeight: '700' },
     sectionLabel: { color: theme.textMuted, fontSize: 13, fontWeight: '600', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
     templateGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
     chip: {
