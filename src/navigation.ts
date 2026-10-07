@@ -7,4 +7,5 @@ export type RootStackParamList = {
   Paywall: undefined;
   Settings: undefined;
   Backup: undefined;
+  Report: undefined;
 };

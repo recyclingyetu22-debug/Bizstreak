@@ -73,6 +73,16 @@ export default function HomeScreen({ navigation }: Props) {
               <Text style={styles.editToggleText}>{editMode ? t('home.done') : t('home.edit')}</Text>
             </Pressable>
           )}
+          {habits.length > 0 && (
+            <Pressable
+              onPress={() => navigation.navigate('Report')}
+              hitSlop={10}
+              style={styles.settingsBtn}
+              accessibilityLabel={t('rep.title')}
+            >
+              <Text style={styles.settingsIcon}>📊</Text>
+            </Pressable>
+          )}
           <Pressable onPress={() => navigation.navigate('Settings')} hitSlop={10} style={styles.settingsBtn}>
             <Text style={styles.settingsIcon}>⚙️</Text>
           </Pressable>
