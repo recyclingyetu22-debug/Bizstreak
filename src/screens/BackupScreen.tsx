@@ -10,6 +10,7 @@ import { useTheme } from '../ThemeContext';
 import { useT } from '../useT';
 import BackButton from '../components/BackButton';
 import { createBackup, limitForPlan, parseBackup } from '../backup';
+import { cancelHabitReminder, syncHabitReminders } from '../notifications';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Backup'>;
 
@@ -57,7 +58,10 @@ export default function BackupScreen({ navigation }: Props) {
       {
         text: t('bk.confirmYes'),
         onPress: () => {
+          // Old habits' reminders must not outlive the data they belonged to.
+          habits.forEach((h) => cancelHabitReminder(h.id));
           restoreData(kept, parsed.themeMode, parsed.language);
+          syncHabitReminders(kept, parsed.language);
           setInput('');
           const note = dropped > 0 ? '\n\n' + t('bk.freeLimit', { dropped }) : '';
           showAlert(t('bk.doneTitle'), t('bk.doneBody', { n: kept.length }) + note, [

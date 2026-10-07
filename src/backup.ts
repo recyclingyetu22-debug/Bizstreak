@@ -1,5 +1,6 @@
 import { AppState, Habit, FREE_HABIT_LIMIT } from './types';
 import { addDays } from './streaks';
+import { parseTime } from './reminderPlan';
 
 // A backup is plain text (JSON) the user can send to themselves. Completion
 // dates are stored as ranges ("2026-01-01..2026-03-31") so a long unbroken
@@ -18,6 +19,7 @@ interface BackupHabit {
   days?: number[];
   track?: boolean;
   unit?: string;
+  rt?: string; // this habit's own reminder time
   entries?: Record<string, { a?: number; n?: string }>;
   done: string[]; // dates or ranges "a..b"
 }
@@ -78,6 +80,7 @@ export function createBackup(state: AppState, now: Date = new Date()): string {
       ...(h.days && h.days.length ? { days: h.days } : {}),
       ...(h.trackAmount ? { track: true } : {}),
       ...(h.unit ? { unit: h.unit } : {}),
+      ...(h.reminderTime ? { rt: h.reminderTime } : {}),
       ...(h.entries && Object.keys(h.entries).length
         ? {
             entries: Object.fromEntries(
@@ -133,6 +136,7 @@ export function parseBackup(text: string): ParsedBackup {
         color: h.color,
         createdAt: h.createdAt,
         days,
+        reminderTime: isStr(h.rt) && parseTime(h.rt) ? h.rt : undefined,
         trackAmount: h.track === true ? true : undefined,
         unit: isStr(h.unit) && h.unit ? h.unit.slice(0, 12) : undefined,
         entries: Object.keys(entries).length ? entries : undefined,

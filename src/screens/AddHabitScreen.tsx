@@ -18,6 +18,9 @@ import { useT } from '../useT';
 import BackButton from '../components/BackButton';
 import EmojiPicker from '../components/EmojiPicker';
 import DayPicker from '../components/DayPicker';
+import TimePicker from '../components/TimePicker';
+import { showAlert } from '../alert';
+import { notificationsAvailable, requestNotificationPermission, scheduleHabitReminder, cancelHabitReminder } from '../notifications';
 import { ALL_DAYS, normalizeDays } from '../schedule';
 import { HABIT_COLORS, HABIT_TEMPLATES, HabitTemplate } from '../types';
 import type { TKey } from '../i18n';
@@ -26,7 +29,7 @@ import { todayISO } from '../streaks';
 type Props = NativeStackScreenProps<RootStackParamList, 'AddHabit'>;
 
 export default function AddHabitScreen({ navigation }: Props) {
-  const { addHabit } = useStore();
+  const { addHabit, language } = useStore();
   const theme = useTheme();
   const t = useT();
   const styles = useMemo(() => makeStyles(theme), [theme]);
@@ -36,6 +39,8 @@ export default function AddHabitScreen({ navigation }: Props) {
   const [days, setDays] = useState<number[]>(ALL_DAYS);
   const [trackAmount, setTrackAmount] = useState(false);
   const [unit, setUnit] = useState('');
+  const [remind, setRemind] = useState(false);
+  const [remTime, setRemTime] = useState('09:00');
 
   const canSave = name.trim().length > 0;
 
@@ -44,9 +49,32 @@ export default function AddHabitScreen({ navigation }: Props) {
     setEmoji(tp.emoji);
   };
 
+
+  const toggleReminder = async (on: boolean) => {
+    if (!on) {
+      setRemind(false);
+      return;
+    }
+    if (!notificationsAvailable) {
+      showAlert(t('set.notifUnavailableTitle'), t('set.notifUnavailableBody'));
+      return;
+    }
+    let granted = false;
+    try {
+      granted = await requestNotificationPermission();
+    } catch {
+      granted = false;
+    }
+    if (!granted) {
+      showAlert(t('set.notifDisabledTitle'), t('set.notifDisabledBody'));
+      return;
+    }
+    setRemind(true);
+  };
+
   const handleSave = () => {
     if (!canSave) return;
-    addHabit({
+    const habit = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       name: name.trim(),
       emoji,
@@ -54,9 +82,12 @@ export default function AddHabitScreen({ navigation }: Props) {
       days: normalizeDays(days),
       trackAmount: trackAmount ? true : undefined,
       unit: trackAmount && unit.trim() ? unit.trim() : undefined,
+      reminderTime: remind ? remTime : undefined,
       createdAt: todayISO(),
       completions: [],
-    });
+    };
+    addHabit(habit);
+    scheduleHabitReminder(habit, language);
     navigation.goBack();
   };
 
@@ -127,6 +158,21 @@ export default function AddHabitScreen({ navigation }: Props) {
             placeholderTextColor={theme.textFaint}
             style={[styles.nameInput, { marginTop: 10 }]}
           />
+        )}
+
+        <View style={styles.trackRow}>
+          <Text style={styles.trackLabel}>{t('add.remind')}</Text>
+          <Switch
+            value={remind}
+            onValueChange={toggleReminder}
+            trackColor={{ false: theme.border, true: theme.accent }}
+            thumbColor="#FFFFFF"
+          />
+        </View>
+        {remind && (
+          <View style={{ marginTop: 14 }}>
+            <TimePicker value={remTime} onChange={setRemTime} />
+          </View>
         )}
 
         <Text style={[styles.sectionLabel, { marginTop: 24 }]}>{t('add.color')}</Text>

@@ -1,6 +1,8 @@
 import { Platform } from 'react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Language, translate } from './i18n';
+import { Habit } from './types';
+import { habitReminderIds, planHabitReminder } from './reminderPlan';
 
 const DAILY_REMINDER_ID = 'bizstreak-daily-reminder';
 
@@ -69,4 +71,51 @@ export async function cancelDailyReminder(): Promise<void> {
   if (!notificationsAvailable) return;
   const Notifications = await loadNotifications();
   await Notifications.cancelScheduledNotificationAsync(DAILY_REMINDER_ID).catch(() => {});
+}
+
+// ---- A reminder of its own for a single habit -------------------------------
+// Each habit can have its own time. A habit that only counts on some days
+// only reminds on those days (see reminderPlan.ts, which is unit-tested).
+
+export async function cancelHabitReminder(habitId: string): Promise<void> {
+  if (!notificationsAvailable) return;
+  try {
+    const Notifications = await loadNotifications();
+    await Promise.all(habitReminderIds(habitId).map((id) => Notifications.cancelScheduledNotificationAsync(id).catch(() => {})));
+  } catch {
+    /* nothing scheduled, nothing to cancel */
+  }
+}
+
+export async function scheduleHabitReminder(habit: Habit, lang: Language = 'en'): Promise<void> {
+  if (!notificationsAvailable) return;
+  try {
+    await cancelHabitReminder(habit.id); // replace whatever was there before
+    const slots = planHabitReminder(habit);
+    if (slots.length === 0) return;
+    const Notifications = await loadNotifications();
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('reminders', {
+        name: translate(lang, 'rem.channel'),
+        importance: Notifications.AndroidImportance.DEFAULT,
+      });
+    }
+    for (const slot of slots) {
+      await Notifications.scheduleNotificationAsync({
+        identifier: slot.id,
+        content: { title: habit.emoji + ' ' + habit.name, body: translate(lang, 'rem.habitBody') },
+        trigger:
+          slot.weekday === undefined
+            ? { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: slot.hour, minute: slot.minute }
+            : { type: Notifications.SchedulableTriggerInputTypes.WEEKLY, weekday: slot.weekday, hour: slot.hour, minute: slot.minute },
+      });
+    }
+  } catch {
+    // A reminder that cannot be scheduled must never get in the way of saving a habit.
+  }
+}
+
+/** Re-creates every habit reminder (after a restore or a language change). */
+export async function syncHabitReminders(habits: Habit[], lang: Language): Promise<void> {
+  for (const habit of habits) await scheduleHabitReminder(habit, lang);
 }

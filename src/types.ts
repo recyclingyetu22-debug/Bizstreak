@@ -9,6 +9,8 @@ export interface Habit {
   // Missing or empty means every day, so habits saved before schedules
   // existed keep working unchanged.
   days?: number[];
+  // Optional own reminder for this habit ("HH:MM"), separate from the general daily one.
+  reminderTime?: string;
   // Optional numbers and notes per day, e.g. the day's sales. Keyed by ISO
   // date. Only habits with trackAmount show an amount field.
   trackAmount?: boolean;

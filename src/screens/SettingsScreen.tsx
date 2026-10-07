@@ -11,7 +11,7 @@ import { useT } from '../useT';
 import TimePicker from '../components/TimePicker';
 import { Language, purchaseErrorKey } from '../i18n';
 import { ThemeMode } from '../types';
-import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder, notificationsAvailable } from '../notifications';
+import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder, notificationsAvailable, syncHabitReminders } from '../notifications';
 import { restorePurchases, isPurchasesUsable, PRO_ENTITLEMENT_ID } from '../purchases';
 import { PRIVACY_URL, TERMS_URL, DELETE_DATA_URL, SUPPORT_EMAIL } from '../links';
 
@@ -76,6 +76,7 @@ export default function SettingsScreen({ navigation }: Props) {
 
   const handleLanguage = async (next: Language) => {
     setLanguage(next);
+    syncHabitReminders(habits, next);
     // The reminder text is baked in when it's scheduled, so re-schedule it.
     if (reminderEnabled) {
       await scheduleDailyReminder(reminderTime, next);

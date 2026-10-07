@@ -15,7 +15,7 @@ interface StoreValue {
   reminderTime: string;
   language: Language;
   addHabit: (habit: Habit) => void;
-  updateHabit: (id: string, patch: Partial<Pick<Habit, 'name' | 'emoji' | 'color' | 'days' | 'trackAmount' | 'unit'>>) => void;
+  updateHabit: (id: string, patch: Partial<Pick<Habit, 'name' | 'emoji' | 'color' | 'days' | 'trackAmount' | 'unit' | 'reminderTime'>>) => void;
   deleteHabit: (id: string) => void;
   toggleHabitDate: (id: string, dateISO: string) => void;
   reorderHabit: (id: string, direction: -1 | 1) => void;

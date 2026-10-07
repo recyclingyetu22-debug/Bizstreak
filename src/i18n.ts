@@ -181,6 +181,10 @@ const en = {
   'rep.empty': 'Add a habit to see your weekly report.',
   'rep.noData': 'Nothing due yet this week.',
 
+  'rem.habitBody': 'Time to check this one off.',
+  'add.remind': 'Remind me about this habit',
+  'det.reminder': (v: Vars) => `Reminder at ${v.time}`,
+
   'rem.title': 'Keep your streak alive 🔥',
   'rem.body': "Take two minutes — check off today's business habits.",
   'rem.channel': 'Daily reminders',
@@ -404,6 +408,10 @@ const fr: Record<TKey, Entry> = {
   'rep.shareTitle': 'Ma semaine BizStreak',
   'rep.empty': 'Ajoutez une habitude pour voir votre rapport hebdomadaire.',
   'rep.noData': "Rien de prévu pour l'instant cette semaine.",
+
+  'rem.habitBody': "C'est le moment de cocher celle-ci.",
+  'add.remind': 'Me rappeler cette habitude',
+  'det.reminder': (v: Vars) => `Rappel à ${v.time}`,
 
   'rem.title': 'Gardez votre série en vie 🔥',
   'rem.body': "Prenez deux minutes — cochez vos habitudes du jour.",

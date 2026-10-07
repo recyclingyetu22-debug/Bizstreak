@@ -132,6 +132,7 @@ export default function HabitDetailScreen({ route, navigation }: Props) {
         </View>
         <Text style={styles.hint}>{t('det.hint')}</Text>
         <Text style={styles.hint}>{t('det.schedule', { days: scheduleText(habit, t) })}</Text>
+        {habit.reminderTime && <Text style={styles.hint}>🔔 {t('det.reminder', { time: habit.reminderTime })}</Text>}
       </ScrollView>
     </SafeAreaView>
   );
