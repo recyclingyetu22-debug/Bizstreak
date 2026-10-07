@@ -24,6 +24,7 @@ interface StoreValue {
   setThemeMode: (mode: ThemeMode) => void;
   setReminder: (enabled: boolean, time: string) => void;
   setLanguage: (language: Language) => void;
+  restoreData: (habits: Habit[], themeMode: ThemeMode, language: Language) => void;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -94,6 +95,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const setOnboarded = (value: boolean) => setState((s) => ({ ...s, onboarded: value }));
   const setThemeMode = (mode: ThemeMode) => setState((s) => ({ ...s, themeMode: mode }));
   const setLanguage = (language: Language) => setState((s) => ({ ...s, language }));
+  // Replaces the habits with a restored backup; purchase status is untouched.
+  const restoreData = (habits: Habit[], themeMode: ThemeMode, language: Language) =>
+    setState((s) => ({ ...s, habits, themeMode, language }));
   const setReminder = (enabled: boolean, time: string) =>
     setState((s) => ({ ...s, reminderEnabled: enabled, reminderTime: time }));
 
@@ -118,6 +122,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         setThemeMode,
         setReminder,
         setLanguage,
+        restoreData,
       }}
     >
       {children}

@@ -163,6 +163,11 @@ export default function SettingsScreen({ navigation }: Props) {
           </View>
         </View>
 
+        <Pressable onPress={() => navigation.navigate('Backup')} style={styles.linkRow}>
+          <Text style={styles.rowText}>{t('set.backup')}</Text>
+          <Text style={styles.rowChevron}>›</Text>
+        </Pressable>
+
         <Pressable onPress={handleRestore} style={styles.linkRow}>
           <Text style={styles.rowText}>{t('set.restore')}</Text>
           <Text style={styles.rowChevron}>›</Text>

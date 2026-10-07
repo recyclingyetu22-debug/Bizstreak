@@ -130,6 +130,31 @@ const en = {
   'set.notifDisabledTitle': 'Notifications disabled',
   'set.notifDisabledBody': 'Enable notifications for BizStreak in your phone settings to get daily reminders.',
 
+  'set.backup': 'Backup & restore',
+  'bk.title': 'Backup & restore',
+  'bk.exportTitle': 'Back up your data',
+  'bk.exportBody':
+    'Creates a text with all your habits and streaks. Send it to yourself (WhatsApp, email, notes) and keep it safe.',
+  'bk.exportBtn': 'Share backup',
+  'bk.shareTitle': 'BizStreak backup',
+  'bk.nothing': 'You have no habits to back up yet.',
+  'bk.textLabel': 'Your backup text (you can also copy it)',
+  'bk.importTitle': 'Restore from a backup',
+  'bk.importBody': 'Paste a backup text below. It replaces the habits currently in the app.',
+  'bk.placeholder': 'Paste your backup here',
+  'bk.restoreBtn': 'Restore',
+  'bk.empty': 'Paste your backup text first.',
+  'bk.invalid': 'This does not look like a BizStreak backup. Nothing was changed.',
+  'bk.noHabits': 'This backup contains no habits.',
+  'bk.confirmTitle': 'Replace your habits?',
+  'bk.confirmBody': (v: Vars) =>
+    `This replaces the habits currently in the app with the ${v.n} ${plural(v.n, 'habit', 'habits')} from the backup.`,
+  'bk.confirmYes': 'Restore',
+  'bk.doneTitle': 'Restored',
+  'bk.doneBody': (v: Vars) => `${v.n} ${plural(v.n, 'habit', 'habits')} restored.`,
+  'bk.freeLimit': (v: Vars) =>
+    `The free plan holds 3 habits, so ${v.dropped} ${plural(v.dropped, 'habit was', 'habits were')} left out. Upgrade to Pro to restore them all.`,
+
   'rem.title': 'Keep your streak alive 🔥',
   'rem.body': "Take two minutes — check off today's business habits.",
   'rem.channel': 'Daily reminders',
@@ -302,6 +327,31 @@ const fr: Record<TKey, Entry> = {
   'set.notifDisabledTitle': 'Notifications désactivées',
   'set.notifDisabledBody':
     "Activez les notifications pour BizStreak dans les paramètres de votre téléphone pour recevoir les rappels quotidiens.",
+
+  'set.backup': 'Sauvegarde et restauration',
+  'bk.title': 'Sauvegarde et restauration',
+  'bk.exportTitle': 'Sauvegardez vos données',
+  'bk.exportBody':
+    'Crée un texte contenant toutes vos habitudes et vos séries. Envoyez-le-vous (WhatsApp, e-mail, notes) et gardez-le précieusement.',
+  'bk.exportBtn': 'Partager la sauvegarde',
+  'bk.shareTitle': 'Sauvegarde BizStreak',
+  'bk.nothing': "Vous n'avez pas encore d'habitudes à sauvegarder.",
+  'bk.textLabel': 'Votre texte de sauvegarde (vous pouvez aussi le copier)',
+  'bk.importTitle': 'Restaurer une sauvegarde',
+  'bk.importBody': "Collez un texte de sauvegarde ci-dessous. Il remplace les habitudes actuellement dans l'application.",
+  'bk.placeholder': 'Collez votre sauvegarde ici',
+  'bk.restoreBtn': 'Restaurer',
+  'bk.empty': "Collez d'abord le texte de la sauvegarde.",
+  'bk.invalid': "Ceci ne ressemble pas à une sauvegarde BizStreak. Rien n'a été modifié.",
+  'bk.noHabits': "Cette sauvegarde ne contient aucune habitude.",
+  'bk.confirmTitle': 'Remplacer vos habitudes ?',
+  'bk.confirmBody': (v: Vars) =>
+    `Cela remplace les habitudes actuelles de l'application par ${v.n} ${plural(v.n, 'habitude', 'habitudes')} de la sauvegarde.`,
+  'bk.confirmYes': 'Restaurer',
+  'bk.doneTitle': 'Restauré',
+  'bk.doneBody': (v: Vars) => `${v.n} ${plural(v.n, 'habitude restaurée', 'habitudes restaurées')}.`,
+  'bk.freeLimit': (v: Vars) =>
+    `La formule gratuite contient 3 habitudes, donc ${v.dropped} ${plural(v.dropped, 'habitude a été laissée', 'habitudes ont été laissées')} de côté. Passez à Pro pour tout restaurer.`,
 
   'rem.title': 'Gardez votre série en vie 🔥',
   'rem.body': "Prenez deux minutes — cochez vos habitudes du jour.",

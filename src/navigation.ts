@@ -6,4 +6,5 @@ export type RootStackParamList = {
   HabitDetail: { habitId: string };
   Paywall: undefined;
   Settings: undefined;
+  Backup: undefined;
 };
