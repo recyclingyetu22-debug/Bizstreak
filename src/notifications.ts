@@ -5,6 +5,9 @@ import { Habit } from './types';
 import { habitReminderIds, planHabitReminder } from './reminderPlan';
 
 const DAILY_REMINDER_ID = 'bizstreak-daily-reminder';
+// Android keeps a channel's sound/importance forever once it exists, so the
+// fixed (audible) channel needs a new id. The old silent 'reminders' channel is left behind.
+const CHANNEL_ID = 'bizstreak-reminders-v2';
 
 // expo-notifications' Android push-registration code was removed from Expo
 // Go as of SDK 53 — merely IMPORTING the module now throws in Expo Go, even
@@ -23,11 +26,22 @@ async function loadNotifications() {
     handleNotification: async () => ({
       shouldShowBanner: true,
       shouldShowList: true,
-      shouldPlaySound: false,
+      shouldPlaySound: true,
       shouldSetBadge: false,
     }),
   });
   return Notifications;
+}
+
+async function ensureChannel(Notifications: typeof import('expo-notifications'), lang: Language) {
+  if (Platform.OS !== 'android') return;
+  await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
+    name: translate(lang, 'rem.channel'),
+    importance: Notifications.AndroidImportance.HIGH,
+    sound: 'default',
+    enableVibrate: true,
+    vibrationPattern: [0, 250, 250, 250],
+  });
 }
 
 export async function requestNotificationPermission(): Promise<boolean> {
@@ -45,12 +59,7 @@ export async function scheduleDailyReminder(time: string, lang: Language = 'en')
   const Notifications = await loadNotifications();
   const [hour, minute] = time.split(':').map(Number);
 
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('reminders', {
-      name: translate(lang, 'rem.channel'),
-      importance: Notifications.AndroidImportance.DEFAULT,
-    });
-  }
+  await ensureChannel(Notifications, lang);
 
   await Notifications.cancelScheduledNotificationAsync(DAILY_REMINDER_ID).catch(() => {});
   await Notifications.scheduleNotificationAsync({
@@ -58,11 +67,13 @@ export async function scheduleDailyReminder(time: string, lang: Language = 'en')
     content: {
       title: translate(lang, 'rem.title'),
       body: translate(lang, 'rem.body'),
+      sound: 'default',
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour,
       minute,
+      channelId: CHANNEL_ID,
     },
   });
 }
@@ -94,20 +105,15 @@ export async function scheduleHabitReminder(habit: Habit, lang: Language = 'en')
     const slots = planHabitReminder(habit);
     if (slots.length === 0) return;
     const Notifications = await loadNotifications();
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('reminders', {
-        name: translate(lang, 'rem.channel'),
-        importance: Notifications.AndroidImportance.DEFAULT,
-      });
-    }
+    await ensureChannel(Notifications, lang);
     for (const slot of slots) {
       await Notifications.scheduleNotificationAsync({
         identifier: slot.id,
-        content: { title: habit.emoji + ' ' + habit.name, body: translate(lang, 'rem.habitBody') },
+        content: { title: habit.emoji + ' ' + habit.name, body: translate(lang, 'rem.habitBody'), sound: 'default' },
         trigger:
           slot.weekday === undefined
-            ? { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: slot.hour, minute: slot.minute }
-            : { type: Notifications.SchedulableTriggerInputTypes.WEEKLY, weekday: slot.weekday, hour: slot.hour, minute: slot.minute },
+            ? { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: slot.hour, minute: slot.minute, channelId: CHANNEL_ID }
+            : { type: Notifications.SchedulableTriggerInputTypes.WEEKLY, weekday: slot.weekday, hour: slot.hour, minute: slot.minute, channelId: CHANNEL_ID },
       });
     }
   } catch {

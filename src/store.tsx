@@ -5,6 +5,7 @@ import { loadState, saveState } from './storage';
 import { getCurrentStreak, toggleCompletion } from './streaks';
 import { Milestone, milestoneCrossed } from './milestones';
 import { initPurchases, hasProEntitlement } from './purchases';
+import { scheduleDailyReminder, syncHabitReminders } from './notifications';
 
 export interface Celebration {
   habitId: string;
@@ -71,6 +72,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       setState(entitled ? { ...s, isPro: true } : s);
       setReady(true);
       hydrated.current = true;
+      // Re-create saved reminders on every start so they always use the current
+      // (audible) notification channel. Never allowed to break startup.
+      try {
+        if (s.reminderEnabled) await scheduleDailyReminder(s.reminderTime, s.language);
+        await syncHabitReminders(s.habits, s.language);
+      } catch {
+        /* reminders are best-effort */
+      }
     });
   }, []);
 
